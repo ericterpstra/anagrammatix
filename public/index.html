@@ -13,17 +13,35 @@
     <div class="container">
         
 	<h1>ANAGRAMMATIX</h1>
-        
-	<button id="btnCreateGame">Create A Game</button>
 
-	<button id="btnJoinGame">Join A Game</button>
-	
+    <div id="gameArea">
+        <button id="btnCreateGame">Create A Game</button>
+        <button id="btnJoinGame">Join A Game</button>
+    </div>
+
     </div>
     
     <script id="create-game-template" type="text/x-handlebars-template">
-        <h2>Go to http://hi.there on your mobile device</h2>
-        <p>Enter the following code: </p>
+        <p>Go to http://hi.there on your mobile device</p>
+        <p>Enter the following code: <span id="spanNewGameCode">Error!</span></p>
     </script>
+
+    <script id="join-game-template" type="text/x-handlebars-template">
+        <div>
+            <label for="inputPlayerName">Your Name:</label>
+            <input id="inputPlayerName" type="text" />
+        </div>
+
+        <div>
+            <label for="inputGameId">Game ID:</label>
+            <input id="inputGameId" type="text"/>
+        </div>
+
+        <div>
+            <button id="btnStart">Start</button>
+        </div>
+    </script>
+
 <script src="libs/jquery-2.0.2.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="app.js"></script>
