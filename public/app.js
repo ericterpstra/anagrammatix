@@ -9,8 +9,12 @@ jQuery(function($){
         },
 
         bindEvents : function() {
-            IO.socket.on('connected', IO.onConnected);            
-            IO.socket.on('newGameCreated', IO.onNewGameCreated);
+            IO.socket.on('connected', IO.onConnected );
+            IO.socket.on('newGameCreated', IO.onNewGameCreated );
+            IO.socket.on('player1Joined', IO.waitForPlayerTwo );
+            IO.socket.on('beginNewGame', IO.beginNewGame );
+
+            IO.socket.on('error', IO.error );
         },
 
         onConnected : function(data) {
@@ -21,12 +25,33 @@ jQuery(function($){
             // If no error
             App.hostGameInit(data.gameId);
             // else display error.
+        },
+
+        waitForPlayerTwo : function(data) {
+            if(App.myRole === 'master' ){
+                // Update master screen
+            }
+
+            if(App.myRole === 'player' ){
+                // Update player screen
+            }
+        },
+
+        beginNewGame : function(data) {
+
+        },
+
+        error : function(data) {
+            alert(data.message);
         }
+
     };
 
     var App = {
 
         gameId: 0,
+
+        myRole: '',
 
         init: function () {
             App.cacheElements();
@@ -84,9 +109,15 @@ jQuery(function($){
 
         hostGameInit: function (gameId) {
             App.gameId = gameId;
+            App.myRole = 'master';
+
             console.log("Game started with ID: " + gameId);
             App.$gameArea.html(App.$templateNewGame);
             $('#spanNewGameCode').text(gameId);
+        },
+
+        waitForPlayer : function() {
+            App.myRole = 'player1';
         }
     };
 

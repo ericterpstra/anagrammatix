@@ -1,3 +1,4 @@
+var async = require('async');
 var io;
 var gameSocket;
 
@@ -24,21 +25,59 @@ function newGameCreated() {
 
 function joinGame(data) {
     console.log('Player ' + data.name + 'attempting to join game: ' + data.gameId );
-
+    var sock = this;
     var rooms = gameSocket.manager.rooms;
+    var room = rooms["/" + data.gameId];
 
-    if( rooms[data.gameId] ){
+    if( room != undefined ){
         var roomClients = io.sockets.clients(data.gameId);
 
         // Check for a manager and other players
         if( roomClients.length > 0 ){
+            var roles = [];
+            async.forEach( roomClients, function(client, callback){
+               client.get('role',function(err, roleName){
+                   if(err) return callback(err);
+                   roles.push(roleName);
+                   console.log("Found " + roleName);
+                   callback();
+               });
+            }, function(err){
 
+                if( roles.indexOf('manager') > -1 ) {
+                    sock.join(data.gameId);
+
+                    console.log('Player ' + data.name + 'joining game: ' + data.gameId );
+
+                    if( roomClients.length == 1 ) {
+
+                        // Wait!
+                        console.log("Master and Player 1 present. Waiting for Player 2...")
+                        io.sockets.in(data.gameId).emit('player1Joined',data.playerName);
+
+                    } else if (roomClients.length == 2 && roles.indexOf('player') > -1 ) {
+
+                        // Start!
+                        console.log("All Players Present. Starting game...");
+                        io.sockets.in(data.gameId).emit('beginNewGame');
+
+                        startGame();
+
+                    } else {
+
+                        // Problem!
+                        console.log(roomClients.length + " clients in a room!!");
+                        sock.emit('error',{message: "Something is wrong here..."});
+
+                    }
+
+                }
+
+            });
+
+        } else {
             //If nobody is in room, emit error
-            //If manager is in room, emit waiting...
-            //If manager && player 1 in room, emit start game
-            //If player but no manager, emit error
-
-            this.join(data.gameId);
+            sock.emit('error',{message: "This room is empty. Please leave!"});
         }
 
     } else {
@@ -46,6 +85,6 @@ function joinGame(data) {
     }
 }
 
-function validatePlayers(players) {
-    //TODO: Use node async lib to get all player roles
-}
+function startGame() {
+    console.log('Game Started.');
+};

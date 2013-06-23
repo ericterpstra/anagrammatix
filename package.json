@@ -1,11 +1,12 @@
 {
     "name" : "anagrammatix",
     "description" : "Anagram Multiplayer Game",
-    "version" : 0.0.1,
+    "version" : "0.0.1",
     "private" : true,
     "dependencies": {
         "express": "3.x",
-        "socket.io":"0.9"
+        "socket.io":"0.9",
+        "async": "0.1"
     }
 }
 
