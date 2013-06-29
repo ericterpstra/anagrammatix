@@ -28,6 +28,7 @@ function joinGame(data) {
     var sock = this;
     var rooms = gameSocket.manager.rooms;
     var room = rooms["/" + data.gameId];
+    sock.set('role','player');
 
     if( room != undefined ){
         var roomClients = io.sockets.clients(data.gameId);
@@ -47,7 +48,7 @@ function joinGame(data) {
                 if( roles.indexOf('manager') > -1 ) {
                     sock.join(data.gameId);
 
-                    console.log('Player ' + data.name + 'joining game: ' + data.gameId );
+                    console.log('Player ' + data.name + ' joining game: ' + data.gameId );
 
                     if( roomClients.length == 1 ) {
 

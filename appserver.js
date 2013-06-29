@@ -11,6 +11,7 @@ app.configure(function() {
 
 var server = require('http').createServer(app).listen(8888);
 var io = require('socket.io').listen(server);
+io.set('log level',1);
 
 io.sockets.on('connection', function (socket) {
     console.log('client connected');

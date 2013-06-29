@@ -38,7 +38,7 @@ jQuery(function($){
         },
 
         beginNewGame : function(data) {
-
+            console.log('New game is beginning!');
         },
 
         error : function(data) {
