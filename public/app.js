@@ -93,6 +93,7 @@ jQuery(function($){
         },
 
         onStartGameClick: function() {
+
             console.log('Clicked "Start Game"');
             var data = {
                 gameId : +($('#inputGameId').val()),
@@ -100,7 +101,7 @@ jQuery(function($){
             };
 
             IO.socket.emit('joinGame', data);
-
+            App.myRole = 'player';
         },
 
         /* *************************************
