@@ -30,15 +30,22 @@ jQuery(function($){
         waitForPlayerTwo : function(data) {
             if(App.myRole === 'master' ){
                 // Update master screen
+                $('#playersWaiting')
+                    .append('<p/>')
+                    .text('Player ' + data.name + ' joined the game.');
             }
 
             if(App.myRole === 'player' ){
                 // Update player screen
+                $('#playerWaitingMessage')
+                    .append('<p/>')
+                    .text('Joined Game ' + data.gameId + '. Waiting for Player 2.');
             }
         },
 
         beginNewGame : function(data) {
             console.log('New game is beginning!');
+            App.beginGameCountdown();
         },
 
         error : function(data) {
@@ -53,6 +60,10 @@ jQuery(function($){
 
         myRole: '',
 
+        masterSocketId: '',
+
+        mySocketId: '',
+
         init: function () {
             App.cacheElements();
             App.bindEvents();
@@ -65,6 +76,7 @@ jQuery(function($){
             App.$gameArea = $('#gameArea');
             App.$templateNewGame = $('#create-game-template').html();
             App.$templateJoinGame = $('#join-game-template').html();
+            App.$templateGameStarting = $('#game-starting-template').html();
 
             // Buttons
             App.$btnCreate = $('#btnCreateGame');
@@ -108,6 +120,8 @@ jQuery(function($){
          *             Game Logic              *
          * *********************************** */
 
+            // *** MASTER ***
+
         hostGameInit: function (gameId) {
             App.gameId = gameId;
             App.myRole = 'master';
@@ -117,12 +131,52 @@ jQuery(function($){
             $('#spanNewGameCode').text(gameId);
         },
 
+        beginGameCountdown : function() {
+            App.$gameArea.html(App.$templateGameStarting);
+
+            var $secondsLeft = $('#startingSecondsLeft');
+
+            if( App.myRole === 'master' ){
+                App.countDown( $secondsLeft, 5 );
+            } else {
+                App.$gameArea.text('Waiting for game to begin...');
+            }
+
+            IO.socket.emit('gameCountdownFinished');
+
+        },
+
+
+            // *** PLAYER ***
+
         waitForPlayer : function() {
             App.myRole = 'player1';
+        },
+
+           // *** MISC / UTIL ***
+
+        countDown : function( $el, startTime) {
+
+            $el.text(startTime);
+
+            console.log('Starting Countdown...');
+            var timer = setInterval(countItDown,1000);
+            console.log('Countdown Finished.');
+
+            function countItDown(){
+                startTime -= 1
+                if( startTime <= 0 ){
+                    clearInterval(timer);
+                    return;
+                }
+                $el.text(startTime);
+            }
+
         }
+
     };
 
     IO.init();
     App.init();
-    
+
 }($));

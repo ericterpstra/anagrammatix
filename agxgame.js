@@ -36,6 +36,7 @@ function joinGame(data) {
         // Check for a manager and other players
         if( roomClients.length > 0 ){
             var roles = [];
+
             async.forEach( roomClients, function(client, callback){
                client.get('role',function(err, roleName){
                    if(err) return callback(err);
@@ -43,7 +44,10 @@ function joinGame(data) {
                    console.log("Found " + roleName);
                    callback();
                });
-            }, function(err){
+            },
+
+            // This callback runs when all the room client's roles have been collected.
+            function(err){
 
                 if( roles.indexOf('manager') > -1 ) {
                     sock.join(data.gameId);
@@ -54,7 +58,7 @@ function joinGame(data) {
 
                         // Wait!
                         console.log("Master and Player 1 present. Waiting for Player 2...")
-                        io.sockets.in(data.gameId).emit('player1Joined',data.playerName);
+                        io.sockets.in(data.gameId).emit('player1Joined', data);
 
                     } else if (roomClients.length == 2 && roles.indexOf('player') > -1 ) {
 

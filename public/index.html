@@ -24,6 +24,7 @@
     <script id="create-game-template" type="text/x-handlebars-template">
         <p>Go to http://hi.there on your mobile device</p>
         <p>Enter the following code: <span id="spanNewGameCode">Error!</span></p>
+        <div id="playersWaiting"></div>
     </script>
 
     <script id="join-game-template" type="text/x-handlebars-template">
@@ -39,8 +40,26 @@
 
         <div>
             <button id="btnStart">Start</button>
+            <div id="playerWaitingMessage"></div>
         </div>
     </script>
+
+    <script id="game-starting-template" type="text/x-handlebars-template">
+        <div>
+            <p>Game Starting In: <span id="startingSecondsLeft"></span></p>
+        </div>
+    </script>
+
+    <script id="game-master-template" type="text/x-handlebars-template">
+
+
+    </script>
+
+    <script id="game-player-template" type="text/x-handlebars-template">
+
+
+    </script>
+
 
 <script src="libs/jquery-2.0.2.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
