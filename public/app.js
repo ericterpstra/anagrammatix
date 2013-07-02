@@ -161,15 +161,15 @@ jQuery(function($){
 
             console.log('Starting Countdown...');
             var timer = setInterval(countItDown,1000);
-            console.log('Countdown Finished.');
 
             function countItDown(){
                 startTime -= 1
+                $el.text(startTime);
                 if( startTime <= 0 ){
+                    console.log('Countdown Finished.');
                     clearInterval(timer);
                     return;
                 }
-                $el.text(startTime);
             }
 
         }

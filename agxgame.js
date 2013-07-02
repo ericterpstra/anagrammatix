@@ -7,7 +7,8 @@ exports.initGame = function(sio, socket){
     gameSocket = socket;
     gameSocket.emit('connected', { message: "You are connected!" });
     gameSocket.on('createNewGame', newGameCreated );
-    gameSocket.on('joinGame', joinGame )
+    gameSocket.on('joinGame', joinGame );
+    gameSocket.on('gameCountdownFinished', startGame);
 }
 
 function newGameCreated() {
@@ -65,19 +66,13 @@ function joinGame(data) {
                         // Start!
                         console.log("All Players Present. Starting game...");
                         io.sockets.in(data.gameId).emit('beginNewGame');
-
-                        startGame();
-
                     } else {
 
                         // Problem!
                         console.log(roomClients.length + " clients in a room!!");
                         sock.emit('error',{message: "Something is wrong here..."});
-
                     }
-
                 }
-
             });
 
         } else {
@@ -92,4 +87,62 @@ function joinGame(data) {
 
 function startGame() {
     console.log('Game Started.');
+// Need to know which room to send to.
+    //Store all relavant game data on master client and master client socket.
+    sendWord(0);
+
 };
+function sendWord(wordPoolIndex, gameRoomId) {
+}
+
+var wordPool = [
+    {
+        "words"  : [ "sale","seal","ales","leas" ],
+        "decoys" : [ "lead","lamp","seed","eels","lean","cels","lyse","sloe","tels","self" ]
+    },
+
+    {
+        "words"  : [ "item","time","mite","emit" ],
+        "decoys" : [ "neat","team","omit","tame","mate","idem","mile","lime","tire","exit" ]
+    },
+
+    {
+        "words"  : [ "spat","past","pats","taps" ],
+        "decoys" : [ "pots","apts","step","lets","pint","atop","tapa","rapt","swap","yaps" ]
+    },
+
+    {
+        "words"  : [ "nest","sent","nets","tens" ],
+        "decoys" : [ "tend","went","lent","teen","neat","ante","tone","newt","vent","elan" ]
+    },
+
+    {
+        "words"  : [ "pale","leap","plea","peal" ],
+        "decoys" : [ "sale","pail","play","lips","slip","pile","pleb","pled","help","lope" ]
+    },
+
+    {
+        "words"  : [ "races","cares","scare","acres" ],
+        "decoys" : [ "crass","scary","seeds","score","screw","cager","clear","recap","trace","cadre" ]
+    },
+
+    {
+        "words"  : [ "bowel","elbow","below","beowl" ],
+        "decoys" : [ "bowed","bower","robed","probe","roble","bowls","blows","brawl","bylaw","ebola" ]
+    },
+
+    {
+        "words"  : [ "dates","stead","sated","adset" ],
+        "decoys" : [ "seats","diety","seeds","today","sited","dotes","tides","duets","deist","diets" ]
+    },
+
+    {
+        "words"  : [ "spear","parse","reaps","pares" ],
+        "decoys" : [ "ramps","tarps","strep","spore","repos","peris","strap","perms","ropes","super" ]
+    },
+
+    {
+        "words"  : [ "stone","tones","steno","onset" ],
+        "decoys" : [ "snout","tongs","stent","tense","terns","santo","stony","toons","snort","stint" ]
+    }
+]
