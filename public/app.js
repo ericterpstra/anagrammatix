@@ -9,12 +9,18 @@ jQuery(function($){
         },
 
         bindEvents : function() {
+            // Both
             IO.socket.on('connected', IO.onConnected );
+            IO.socket.on('error', IO.error );
+            IO.socket.on('newWordData', IO.onNewWordData);
+
+            // host
             IO.socket.on('newGameCreated', IO.onNewGameCreated );
-            IO.socket.on('player1Joined', IO.waitForPlayerTwo );
             IO.socket.on('beginNewGame', IO.beginNewGame );
 
-            IO.socket.on('error', IO.error );
+            // Player
+            IO.socket.on('playerJoinedRoom', IO.playerJoinedRoom );
+
         },
 
         onConnected : function(data) {
@@ -22,30 +28,38 @@ jQuery(function($){
         },
 
         onNewGameCreated : function(data) {
-            // If no error
-            App.hostGameInit(data.gameId);
-            // else display error.
+            App.hostGameInit(data);
         },
 
-        waitForPlayerTwo : function(data) {
-            if(App.myRole === 'master' ){
-                // Update master screen
-                $('#playersWaiting')
-                    .append('<p/>')
-                    .text('Player ' + data.name + ' joined the game.');
+        playerJoinedRoom : function(data) {
+            if(App.myRole === 'host' ){
+                App.hostUpdateWaitingScreen(data);
             }
 
             if(App.myRole === 'player' ){
                 // Update player screen
-                $('#playerWaitingMessage')
-                    .append('<p/>')
-                    .text('Joined Game ' + data.gameId + '. Waiting for Player 2.');
+                App.playerUpdateWaitingScreen(data);
             }
         },
 
         beginNewGame : function(data) {
-            console.log('New game is beginning!');
-            App.beginGameCountdown();
+            if(App.myRole === 'host' ){
+                App.hostGameCountdown();
+            }
+
+            if(App.myRole === 'player' ){
+                App.playerGetReady(data);
+            }
+        },
+
+        onNewWordData : function(data) {
+            if(App.myRole === 'host' ){
+                App.hostNewWord(data);
+            }
+
+            if(App.myRole === 'player' ){
+                App.playerNewWord(data);
+            }
         },
 
         error : function(data) {
@@ -58,11 +72,18 @@ jQuery(function($){
 
         gameId: 0,
 
-        myRole: '',
-
-        masterSocketId: '',
+        myRole: '',   // 'player' or 'host'
 
         mySocketId: '',
+
+        playerData: {
+            hostSocketId: ''
+        },
+
+        hostData: {
+            players : [],
+            numPlayersInRoom: 0
+        },
 
         init: function () {
             App.cacheElements();
@@ -86,76 +107,120 @@ jQuery(function($){
         bindEvents: function () {
             App.$btnCreate.on('click', App.onCreateClick);
             App.$btnJoin.on('click', App.onJoinClick);
-            App.$doc.on('click','#btnStart',App.onStartGameClick);
+            App.$doc.on('click','#btnStart',App.onPlayerStartClick);
+            App.$doc.on('click','.btnAnswser',App.onPlayerAnswerClick);
         },
 
         /* *************************************
-         *           Event Handlers            *
+         *         UI Event Handlers           *
          * *********************************** */
 
         onCreateClick: function () {
-            console.log('Clicked "Create New Game"');
-            IO.socket.emit('createNewGame');
+            console.log('Clicked "Create A Game"');
+            IO.socket.emit('hostCreateNewGame');
         },
 
         onJoinClick: function () {
-            console.log('Clicked "Create New Game"');
+            console.log('Clicked "Join A Game"');
             App.$gameArea.html(App.$templateJoinGame);
 
         },
 
-        onStartGameClick: function() {
-
-            console.log('Clicked "Start Game"');
+        onPlayerStartClick: function() {
+            console.log('Player clicked "Start"');
             var data = {
                 gameId : +($('#inputGameId').val()),
-                name : $('#inputPlayerName').val() || 'anon'
+                playerName : $('#inputPlayerName').val() || 'anon'
             };
 
-            IO.socket.emit('joinGame', data);
+            IO.socket.emit('playerJoinGame', data);
             App.myRole = 'player';
+        },
+
+        onPlayerAnswerClick: function(e) {
+            console.log('Clicked Answer Button');
         },
 
         /* *************************************
          *             Game Logic              *
          * *********************************** */
 
-            // *** MASTER ***
+            // *** HOST ***
 
-        hostGameInit: function (gameId) {
-            App.gameId = gameId;
-            App.myRole = 'master';
+        hostGameInit: function (data) {
+            App.gameId = data.gameId;
+            App.mySocketId = data.mySocketId;
+            App.myRole = 'host';
+            App.numPlayersInRoom = 0;
 
-            console.log("Game started with ID: " + gameId);
+            console.log("Game started with ID: " + App.gameId + ' by host: ' + App.mySocketId);
             App.$gameArea.html(App.$templateNewGame);
-            $('#spanNewGameCode').text(gameId);
+            $('#spanNewGameCode').text(App.gameId);
         },
 
-        beginGameCountdown : function() {
+        hostUpdateWaitingScreen: function(data) {
+            // Update host screen
+            $('#playersWaiting')
+                .append('<p/>')
+                .text('Player ' + data.playerName + ' joined the game.');
+            App.hostData.players.push(data);
+            App.hostData.numPlayersInRoom += 1;
+
+            if (App.hostData.numPlayersInRoom === 2) {
+                console.log('Room is full. Almost ready!');
+                IO.socket.emit('hostRoomFull',App.gameId);
+            }
+        },
+
+        hostGameCountdown : function() {
             App.$gameArea.html(App.$templateGameStarting);
 
             var $secondsLeft = $('#startingSecondsLeft');
 
-            if( App.myRole === 'master' ){
-                App.countDown( $secondsLeft, 5 );
-            } else {
-                App.$gameArea.text('Waiting for game to begin...');
-            }
-
-            IO.socket.emit('gameCountdownFinished');
-
+            App.countDown( $secondsLeft, 5, function(){
+                IO.socket.emit('hostCountdownFinished', App.gameId);
+            });
         },
 
-
+        hostNewWord : function(data) {
+            $('#gameArea').html('<h2>' + data.word + '</h2>')
+        },
             // *** PLAYER ***
 
-        waitForPlayer : function() {
-            App.myRole = 'player1';
+        playerUpdateWaitingScreen : function(data) {
+            App.myRole = 'player';
+            App.mySocketId = data.mySocketId;
+            App.gameId = data.gameId;
+
+            $('#playerWaitingMessage')
+                .append('<p/>')
+                .text('Joined Game ' + data.gameId + '. Please wait for game to begin.');
+        },
+
+        playerGetReady : function(hostData) {
+            App.playerData.hostSocketId = hostData.mySocketId;
+            $('#gameArea').html('<h4>Get Ready</h4>');
+        },
+
+        playerNewWord : function(data) {
+            //TODO: Display word list
+            var $list = $('<ul/>');
+
+            $.each(data.list, function(){
+                $list
+                    .append( $('<li/>')
+                        .append( $('<button/>')
+                            .addClass('btnAnswer')
+                            .val(this)
+                            .html(this)
+                        )
+                    )
+            });
         },
 
            // *** MISC / UTIL ***
 
-        countDown : function( $el, startTime) {
+        countDown : function( $el, startTime, callback) {
 
             $el.text(startTime);
 
@@ -168,6 +233,7 @@ jQuery(function($){
                 if( startTime <= 0 ){
                     console.log('Countdown Finished.');
                     clearInterval(timer);
+                    callback();
                     return;
                 }
             }

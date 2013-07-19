@@ -6,94 +6,89 @@ exports.initGame = function(sio, socket){
     io = sio;
     gameSocket = socket;
     gameSocket.emit('connected', { message: "You are connected!" });
-    gameSocket.on('createNewGame', newGameCreated );
-    gameSocket.on('joinGame', joinGame );
-    gameSocket.on('gameCountdownFinished', startGame);
+
+    // Host
+    gameSocket.on('hostCreateNewGame', hostCreateNewGame);
+    gameSocket.on('hostRoomFull', hostPrepareGame);
+    gameSocket.on('hostCountdownFinished', hostStartGame);
+
+    // Player
+    gameSocket.on('playerJoinGame', playerJoinGame );
 }
 
-function newGameCreated() {
+// *** HOST ***
+
+function hostCreateNewGame() {
     // Create unique room
     var thisGameId = ( Math.random() * 100000 ) | 0;
 
-    this.set('role','manager');
+    //this.set('role','manager');
 
-    // return room id
-    this.emit('newGameCreated', {gameId: thisGameId});
+    // return room id and socket id
+    this.emit('newGameCreated', {gameId: thisGameId, mySocketId: this.id});
 
-    // wait for players in room
+    // Join Game room and wait for players
     this.join(thisGameId.toString());
 };
 
-function joinGame(data) {
-    console.log('Player ' + data.name + 'attempting to join game: ' + data.gameId );
+function hostPrepareGame(gameId) {
     var sock = this;
-    var rooms = gameSocket.manager.rooms;
-    var room = rooms["/" + data.gameId];
-    sock.set('role','player');
+    var data = {
+        mySocketId : sock.id,
+        gameId : gameId
+    };
+    console.log("All Players Present. Preparing game...");
+    io.sockets.in(data.gameId).emit('beginNewGame', data);
+}
+
+function hostStartGame(gameId) {
+    console.log('Game Started.');
+    sendWord(0,gameId);
+};
+
+// *** PLAYER ***
+
+// data.gameId, data.playerName
+function playerJoinGame(data) {
+    console.log('Player ' + data.playerName + 'attempting to join game: ' + data.gameId );
+    var sock = this;
+    var room = gameSocket.manager.rooms["/" + data.gameId];
 
     if( room != undefined ){
-        var roomClients = io.sockets.clients(data.gameId);
-
-        // Check for a manager and other players
-        if( roomClients.length > 0 ){
-            var roles = [];
-
-            async.forEach( roomClients, function(client, callback){
-               client.get('role',function(err, roleName){
-                   if(err) return callback(err);
-                   roles.push(roleName);
-                   console.log("Found " + roleName);
-                   callback();
-               });
-            },
-
-            // This callback runs when all the room client's roles have been collected.
-            function(err){
-
-                if( roles.indexOf('manager') > -1 ) {
-                    sock.join(data.gameId);
-
-                    console.log('Player ' + data.name + ' joining game: ' + data.gameId );
-
-                    if( roomClients.length == 1 ) {
-
-                        // Wait!
-                        console.log("Master and Player 1 present. Waiting for Player 2...")
-                        io.sockets.in(data.gameId).emit('player1Joined', data);
-
-                    } else if (roomClients.length == 2 && roles.indexOf('player') > -1 ) {
-
-                        // Start!
-                        console.log("All Players Present. Starting game...");
-                        io.sockets.in(data.gameId).emit('beginNewGame');
-                    } else {
-
-                        // Problem!
-                        console.log(roomClients.length + " clients in a room!!");
-                        sock.emit('error',{message: "Something is wrong here..."});
-                    }
-                }
-            });
-
-        } else {
-            //If nobody is in room, emit error
-            sock.emit('error',{message: "This room is empty. Please leave!"});
-        }
-
+        data.mySocketId = sock.id;
+        sock.join(data.gameId);
+        console.log('Player ' + data.playerName + ' joining game: ' + data.gameId );
+        io.sockets.in(data.gameId).emit('playerJoinedRoom', data);
     } else {
         this.emit('error',{message: "This room does not exist."} );
     }
 }
 
-function startGame() {
-    console.log('Game Started.');
-// Need to know which room to send to.
-    //Store all relavant game data on master client and master client socket.
-    sendWord(0);
 
-};
-function sendWord(wordPoolIndex, gameRoomId) {
+// *** GAME  ***
+
+function sendWord(wordPoolIndex, gameId) {
+    var data = getWordData(wordPoolIndex);
+
+    io.sockets.in(data.gameId).emit('newWordData', data);
 }
+
+function getWordData(i){
+    var words = wordPool[i].words.sort(easyShuffle);
+    var decoys = wordPool[i].decoys.sort(easyShuffle).slice(0,5);
+    var rnd = Math.floor(Math.random() * 5);
+    decoys.splice(rnd, 0, words[1]);
+
+    var wordData = {
+        word : words[0],
+        answer : words[1],
+        list : decoys
+    };
+
+    return wordData;
+}
+
+function easyShuffle() {return 0.5 - Math.random()};
 
 var wordPool = [
     {
