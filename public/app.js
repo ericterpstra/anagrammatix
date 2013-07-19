@@ -77,7 +77,8 @@ jQuery(function($){
         mySocketId: '',
 
         playerData: {
-            hostSocketId: ''
+            hostSocketId: '',
+            myName: ''
         },
 
         hostData: {
@@ -108,7 +109,7 @@ jQuery(function($){
             App.$btnCreate.on('click', App.onCreateClick);
             App.$btnJoin.on('click', App.onJoinClick);
             App.$doc.on('click','#btnStart',App.onPlayerStartClick);
-            App.$doc.on('click','.btnAnswser',App.onPlayerAnswerClick);
+            App.$doc.on('click','.btnAnswer',App.onPlayerAnswerClick);
         },
 
         /* *************************************
@@ -135,10 +136,15 @@ jQuery(function($){
 
             IO.socket.emit('playerJoinGame', data);
             App.myRole = 'player';
+            App.myName = data.playerName;
         },
 
         onPlayerAnswerClick: function(e) {
             console.log('Clicked Answer Button');
+            var $btn = $(this);
+            var answer = $btn.val();
+
+
         },
 
         /* *************************************
@@ -204,18 +210,20 @@ jQuery(function($){
 
         playerNewWord : function(data) {
             //TODO: Display word list
-            var $list = $('<ul/>');
+            var $list = $('<ul/>').attr('id','ulAnswers');
 
             $.each(data.list, function(){
-                $list
-                    .append( $('<li/>')
-                        .append( $('<button/>')
-                            .addClass('btnAnswer')
-                            .val(this)
-                            .html(this)
+                $list                                //  <ul> </ul>
+                    .append( $('<li/>')              //  <ul> <li> </li> </ul>
+                        .append( $('<button/>')      //  <ul> <li> <button> </button> </li> </ul>
+                            .addClass('btnAnswer')   //  <ul> <li> <button class='btnAnswer'> </button> </li> </ul>
+                            .val(this)               //  <ul> <li> <button class='btnAnswer' value='word'> </button> </li> </ul>
+                            .html(this)              //  <ul> <li> <button class='btnAnswer' value='word'>word</button> </li> </ul>
                         )
                     )
             });
+
+            $('#gameArea').html($list);
         },
 
            // *** MISC / UTIL ***
