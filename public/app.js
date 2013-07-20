@@ -143,8 +143,10 @@ jQuery(function($){
             console.log('Clicked Answer Button');
             var $btn = $(this);
             var answer = $btn.val();
-
-
+            var data = {
+                playerId: App.mySocketId
+            }
+            IO.socket.emit('playerAnswer',)
         },
 
         /* *************************************
@@ -209,7 +211,6 @@ jQuery(function($){
         },
 
         playerNewWord : function(data) {
-            //TODO: Display word list
             var $list = $('<ul/>').attr('id','ulAnswers');
 
             $.each(data.list, function(){
