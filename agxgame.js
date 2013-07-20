@@ -1,4 +1,4 @@
-var async = require('async');
+//var async = require('async');
 var io;
 var gameSocket;
 
@@ -11,9 +11,10 @@ exports.initGame = function(sio, socket){
     gameSocket.on('hostCreateNewGame', hostCreateNewGame);
     gameSocket.on('hostRoomFull', hostPrepareGame);
     gameSocket.on('hostCountdownFinished', hostStartGame);
-
+    gameSocket.on('hostNextRound', hostNextRound);
     // Player
-    gameSocket.on('playerJoinGame', playerJoinGame );
+    gameSocket.on('playerJoinGame', playerJoinGame);
+    gameSocket.on('playerAnswer', playerAnswer);
 }
 
 // *** HOST ***
@@ -46,6 +47,14 @@ function hostStartGame(gameId) {
     sendWord(0,gameId);
 };
 
+function hostNextRound(data) {
+    if(data.round < wordPool.length ){
+        sendWord(data.round, data.gameId);
+    } else {
+        io.sockets.emit('gameOver',data);
+    }
+}
+
 // *** PLAYER ***
 
 // data.gameId, data.playerName
@@ -64,6 +73,11 @@ function playerJoinGame(data) {
     }
 }
 
+function playerAnswer(data) {
+    console.log('Player ID: ' + data.playerId + ' answered a question with: ' + data.answer);
+
+    io.sockets.in(data.gameId).emit('hostCheckAnswer', data);
+}
 
 // *** GAME  ***
 
@@ -80,6 +94,7 @@ function getWordData(i){
     decoys.splice(rnd, 0, words[1]);
 
     var wordData = {
+        round: i,
         word : words[0],
         answer : words[1],
         list : decoys
@@ -105,7 +120,7 @@ var wordPool = [
         "words"  : [ "spat","past","pats","taps" ],
         "decoys" : [ "pots","apts","step","lets","pint","atop","tapa","rapt","swap","yaps" ]
     },
-
+    /*
     {
         "words"  : [ "nest","sent","nets","tens" ],
         "decoys" : [ "tend","went","lent","teen","neat","ante","tone","newt","vent","elan" ]
@@ -140,4 +155,5 @@ var wordPool = [
         "words"  : [ "stone","tones","steno","onset" ],
         "decoys" : [ "snout","tongs","stent","tense","terns","santo","stony","toons","snort","stint" ]
     }
+    */
 ]

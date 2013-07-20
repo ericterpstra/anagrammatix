@@ -13,10 +13,12 @@ jQuery(function($){
             IO.socket.on('connected', IO.onConnected );
             IO.socket.on('error', IO.error );
             IO.socket.on('newWordData', IO.onNewWordData);
+            IO.socket.on('gameOver', IO.gameOver);
 
             // host
             IO.socket.on('newGameCreated', IO.onNewGameCreated );
             IO.socket.on('beginNewGame', IO.beginNewGame );
+            IO.socket.on('hostCheckAnswer', IO.hostCheckAnswer);
 
             // Player
             IO.socket.on('playerJoinedRoom', IO.playerJoinedRoom );
@@ -24,6 +26,7 @@ jQuery(function($){
         },
 
         onConnected : function(data) {
+            App.mySocketId = IO.socket.socket.sessionid;
             console.log(data.message);
         },
 
@@ -36,7 +39,7 @@ jQuery(function($){
                 App.hostUpdateWaitingScreen(data);
             }
 
-            if(App.myRole === 'player' ){
+            if(App.myRole === 'player' && IO.socket.socket.sessionid === data.mySocketId ){
                 // Update player screen
                 App.playerUpdateWaitingScreen(data);
             }
@@ -53,12 +56,30 @@ jQuery(function($){
         },
 
         onNewWordData : function(data) {
+            App.currentRound = data.round;
+
             if(App.myRole === 'host' ){
                 App.hostNewWord(data);
             }
 
             if(App.myRole === 'player' ){
                 App.playerNewWord(data);
+            }
+        },
+
+        hostCheckAnswer : function(data) {
+            if(App.myRole === 'host') {
+                App.hostCheckAnswer(data);
+            }
+        },
+
+        gameOver : function(data) {
+            if(App.myRole === 'host' ){
+                App.hostEndGame(data);
+            }
+
+            if(App.myRole === 'player' ){
+                App.playerEndGame(data);
             }
         },
 
@@ -76,6 +97,8 @@ jQuery(function($){
 
         mySocketId: '',
 
+        currentRound: 0,
+
         playerData: {
             hostSocketId: '',
             myName: ''
@@ -83,7 +106,8 @@ jQuery(function($){
 
         hostData: {
             players : [],
-            numPlayersInRoom: 0
+            numPlayersInRoom: 0,
+            currentCorrectAnswer: ''
         },
 
         init: function () {
@@ -98,7 +122,7 @@ jQuery(function($){
             App.$gameArea = $('#gameArea');
             App.$templateNewGame = $('#create-game-template').html();
             App.$templateJoinGame = $('#join-game-template').html();
-            App.$templateGameStarting = $('#game-starting-template').html();
+            App.$hostGame = $('#host-game-template').html();
 
             // Buttons
             App.$btnCreate = $('#btnCreateGame');
@@ -144,9 +168,12 @@ jQuery(function($){
             var $btn = $(this);
             var answer = $btn.val();
             var data = {
-                playerId: App.mySocketId
+                gameId: App.gameId,
+                playerId: App.mySocketId,
+                answer: answer,
+                round: App.currentRound
             }
-            IO.socket.emit('playerAnswer',)
+            IO.socket.emit('playerAnswer',data);
         },
 
         /* *************************************
@@ -181,23 +208,69 @@ jQuery(function($){
         },
 
         hostGameCountdown : function() {
-            App.$gameArea.html(App.$templateGameStarting);
+            App.$gameArea.html(App.$hostGame);
 
-            var $secondsLeft = $('#startingSecondsLeft');
+            var $secondsLeft = $('#hostWord');
 
             App.countDown( $secondsLeft, 5, function(){
                 IO.socket.emit('hostCountdownFinished', App.gameId);
             });
+
+            $('#player1Score')
+                .find('.playerName')
+                .html(App.hostData.players[0].playerName);
+
+            $('#player2Score')
+                .find('.playerName')
+                .html(App.hostData.players[1].playerName);
+
+            $('#player1Score').find('.score').attr('id',App.hostData.players[0].mySocketId);
+            $('#player2Score').find('.score').attr('id',App.hostData.players[1].mySocketId);
         },
 
         hostNewWord : function(data) {
-            $('#gameArea').html('<h2>' + data.word + '</h2>')
+            $('#hostWord').html('<h2>' + data.word + '</h2>');
+            App.hostData.currentCorrectAnswer = data.answer;
+            App.hostData.currentRound = data.round;
         },
+
+        hostCheckAnswer : function(data) {
+            if (data.round === App.currentRound){
+
+                if( App.hostData.currentCorrectAnswer === data.answer ) {
+                    // Advance player's score
+                    var $pScore = $('#' + data.playerId);
+                    $pScore.text( +$pScore.text() + 1 );
+
+                    // Advance the round
+                    App.currentRound += 1;
+                    var data = {
+                        gameId : App.gameId,
+                        round : App.currentRound
+                    }
+                    IO.socket.emit('hostNextRound',data);
+                }
+            }
+        },
+
+        hostEndGame : function(data) {
+            var $p1 = $('#player1Score');
+            var p1Score = +$p1.find('score').text();
+            var p1Name = $p1.find('playerName').text();
+
+            var $p2 = $('#player2Score');
+            var p2Score = +$p2.find('score').text();
+            var p2Name = $p2.find('playerName').text();
+
+            var winner = (p1Score < p2Score) ? p2Name : p1Name;
+
+            $('#gameArea').append( $('<h1/>').text(winner + 'Wins!!') );
+        },
+
             // *** PLAYER ***
 
         playerUpdateWaitingScreen : function(data) {
             App.myRole = 'player';
-            App.mySocketId = data.mySocketId;
             App.gameId = data.gameId;
 
             $('#playerWaitingMessage')
@@ -225,6 +298,10 @@ jQuery(function($){
             });
 
             $('#gameArea').html($list);
+        },
+
+        playerEndGame : function() {
+            $('#gameArea').html('Please look at the game screen now.');
         },
 
            // *** MISC / UTIL ***
