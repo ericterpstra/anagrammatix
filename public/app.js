@@ -106,6 +106,7 @@ jQuery(function($){
 
         hostData: {
             players : [],
+            isNewGame : false,
             numPlayersInRoom: 0,
             currentCorrectAnswer: ''
         },
@@ -134,6 +135,7 @@ jQuery(function($){
             App.$btnJoin.on('click', App.onJoinClick);
             App.$doc.on('click','#btnStart',App.onPlayerStartClick);
             App.$doc.on('click','.btnAnswer',App.onPlayerAnswerClick);
+            App.$doc.on('click','#btnPlayerRestart', App.onPlayerRestart);
         },
 
         /* *************************************
@@ -176,6 +178,16 @@ jQuery(function($){
             IO.socket.emit('playerAnswer',data);
         },
 
+        onPlayerRestart : function() {
+            var data = {
+                gameId : App.gameId,
+                playerName : App.playerData.myName
+            }
+            IO.socket.emit('playerRestart',data);
+            App.currentRound = 0;
+            $('#gameArea').html("<h3>Waiting on host to start new game.</h3>");
+        },
+
         /* *************************************
          *             Game Logic              *
          * *********************************** */
@@ -188,12 +200,19 @@ jQuery(function($){
             App.myRole = 'host';
             App.numPlayersInRoom = 0;
 
+            App.hostDisplayNewGameScreen();
             console.log("Game started with ID: " + App.gameId + ' by host: ' + App.mySocketId);
+        },
+
+        hostDisplayNewGameScreen : function() {
             App.$gameArea.html(App.$templateNewGame);
             $('#spanNewGameCode').text(App.gameId);
         },
 
         hostUpdateWaitingScreen: function(data) {
+            if ( App.hostData.isNewGame ) {
+                App.hostDisplayNewGameScreen();
+            }
             // Update host screen
             $('#playersWaiting')
                 .append('<p/>')
@@ -236,11 +255,11 @@ jQuery(function($){
 
         hostCheckAnswer : function(data) {
             if (data.round === App.currentRound){
+                var $pScore = $('#' + data.playerId);
 
+                // Advance player's score
                 if( App.hostData.currentCorrectAnswer === data.answer ) {
-                    // Advance player's score
-                    var $pScore = $('#' + data.playerId);
-                    $pScore.text( +$pScore.text() + 1 );
+                    $pScore.text( +$pScore.text() + 5 );
 
                     // Advance the round
                     App.currentRound += 1;
@@ -249,22 +268,31 @@ jQuery(function($){
                         round : App.currentRound
                     }
                     IO.socket.emit('hostNextRound',data);
+                } else {
+                    $pScore.text( +$pScore.text() - 3 );
                 }
             }
         },
 
         hostEndGame : function(data) {
             var $p1 = $('#player1Score');
-            var p1Score = +$p1.find('score').text();
-            var p1Name = $p1.find('playerName').text();
+            var p1Score = +$p1.find('.score').text();
+            var p1Name = $p1.find('.playerName').text();
 
             var $p2 = $('#player2Score');
-            var p2Score = +$p2.find('score').text();
-            var p2Name = $p2.find('playerName').text();
+            var p2Score = +$p2.find('.score').text();
+            var p2Name = $p2.find('.playerName').text();
 
             var winner = (p1Score < p2Score) ? p2Name : p1Name;
 
-            $('#gameArea').append( $('<h1/>').text(winner + 'Wins!!') );
+            $('#gameArea').html( $('<h1/>').text(winner + ' Wins!!') );
+            App.hostData.numPlayersInRoom = 0;
+            App.hostData.isNewGame = true;
+        },
+
+        hostRestartGame : function(data) {
+            App.$gameArea.html(App.$templateNewGame);
+            $('#spanNewGameCode').text(App.gameId);
         },
 
             // *** PLAYER ***
@@ -301,7 +329,11 @@ jQuery(function($){
         },
 
         playerEndGame : function() {
-            $('#gameArea').html('Please look at the game screen now.');
+            $('#gameArea').html(
+                $('<div>')
+                    .append('<h3>Game Over!</h3>')
+                    .append('<button>Start Again</button>').attr('id','btnPlayerRestart')
+            );
         },
 
            // *** MISC / UTIL ***

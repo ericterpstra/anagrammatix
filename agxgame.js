@@ -15,6 +15,7 @@ exports.initGame = function(sio, socket){
     // Player
     gameSocket.on('playerJoinGame', playerJoinGame);
     gameSocket.on('playerAnswer', playerAnswer);
+    gameSocket.on('playerRestart', playerRestart);
 }
 
 // *** HOST ***
@@ -79,6 +80,12 @@ function playerAnswer(data) {
     io.sockets.in(data.gameId).emit('hostCheckAnswer', data);
 }
 
+function playerRestart(data) {
+    console.log('Player: ' + data.playerName + ' ready for new game.');
+    data.playerId = this.id;
+    io.sockets.in(data.gameId).emit('playerJoinedRoom',data);
+}
+
 // *** GAME  ***
 
 function sendWord(wordPoolIndex, gameId) {
@@ -118,7 +125,7 @@ var wordPool = [
 
     {
         "words"  : [ "spat","past","pats","taps" ],
-        "decoys" : [ "pots","apts","step","lets","pint","atop","tapa","rapt","swap","yaps" ]
+        "decoys" : [ "pots","laps","step","lets","pint","atop","tapa","rapt","swap","yaps" ]
     },
     /*
     {
