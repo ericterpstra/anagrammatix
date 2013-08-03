@@ -5,22 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     
     <link href='http://fonts.googleapis.com/css?family=Lato:300|Quicksand' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Quicksand:300,400,700' rel='stylesheet' type='text/css'>
     <link href="css/styles.css" rel="stylesheet">
 </head>
 
 <body>
 
-    <div class="container">
-        
-	<h1>ANAGRAMMATIX</h1>
 
-    <div id="gameArea">
-        <button id="btnCreateGame">Create A Game</button>
-        <button id="btnJoinGame">Join A Game</button>
+    <div class="gameArea">
+
+        <div class="center">
+
+            <div class="title bigtext">
+                <div>ANAGRAMMATIX</div>
+            </div>
+
+            <div class="buttons">
+
+                <div id="btnCreateGame" class="btn left bigtext"><div>START</div></div>
+                <div id="btnJoinGame" class="btn right bigtext"><div>JOIN</div></div>
+                <div style="clear:both"></div>
+            </div>
+
+        </div>
+
+        <div class="footer">
+
+        </div>
+
     </div>
 
-    </div>
-    
+
     <script id="create-game-template" type="text/x-handlebars-template">
         <p>Go to http://hi.there on your mobile device</p>
         <p>Enter the following code: <span id="spanNewGameCode">Error!</span></p>
@@ -58,18 +73,8 @@
         </div>
     </script>
 
-    <script id="game-master-template" type="text/x-handlebars-template">
-
-
-    </script>
-
-    <script id="game-player-template" type="text/x-handlebars-template">
-
-
-    </script>
-
-
 <script src="libs/jquery-2.0.2.min.js"></script>
+<script src="libs/bigtext.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="app.js"></script>
 

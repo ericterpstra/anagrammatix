@@ -1,9 +1,100 @@
-body {
-    
+/*
+
+Dark Green: #78BD4C
+Mid Green:  #A8FF56
+Lite : #ECFFE0
+Dark Prple: #A22FB0
+Lite Prple: #FAD1FF
+
+*/
+
+html, body {
+    background-color: #78BD4C;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.gameArea {
+    height: 100%;
+    width: 100%;
+}
+.center {
+    width: 94%;
+    height: 40%;
+    position: fixed;
+    left: 3%;
+    top: 30%;
+}
+
+.title {
+    background-color: black;
+    margin: 0px auto;
+    text-align: center;
+    width: 100%;
+    /*height:60%;*/
+    font-family: 'Quicksand', sans-serif;
+    color: #ECFFE0;
+    font-weight: 300;
 }
 
 h1 {
-    font-family: 'Lato', sans-serif;
-    color: #aabb33;
-    font-size: 1em;
+    margin: 0;
+    font-family: 'Quicksand', sans-serif;
+    color: #ECFFE0;
+    font-weight: 300;
+}
+
+.buttons {
+    height: 25%;
+    width: 100%;
+    margin-top: 1%;
+    text-align: center;
+}
+
+.btn {
+    display: inline-block;
+    height: 100%;
+    width: 49%;
+    margin-bottom: 0;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    cursor: pointer;
+    border: 1px solid transparent;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+
+.btn:focus {
+    outline: thin dotted #333;
+    outline: 5px auto -webkit-focus-ring-color;
+    outline-offset: -2px;
+}
+
+.btn:hover,
+.btn:focus {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.btn:active,
+.btn.active {
+    outline: 0;
+    -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+
+.left {
+    float: left;
+}
+
+.right {
+    float: right;
 }

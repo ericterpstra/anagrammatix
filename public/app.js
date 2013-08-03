@@ -114,6 +114,7 @@ jQuery(function($){
         init: function () {
             App.cacheElements();
             App.bindEvents();
+            $('.bigtext').bigtext();
         },
 
         cacheElements: function () {
