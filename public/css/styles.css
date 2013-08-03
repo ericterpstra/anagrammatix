@@ -29,7 +29,6 @@ html, body {
 }
 
 .title {
-    background-color: black;
     margin: 0px auto;
     text-align: center;
     width: 100%;
@@ -47,7 +46,7 @@ h1 {
 }
 
 .buttons {
-    height: 25%;
+    height: 20%;
     width: 100%;
     margin-top: 1%;
     text-align: center;
@@ -58,9 +57,13 @@ h1 {
     height: 100%;
     width: 49%;
     margin-bottom: 0;
+    color: #ECFFE0;
     font-family: 'Quicksand', sans-serif;
     font-weight: 700;
+    font-size: 2em;
+    line-height: 1.2;
     text-align: center;
+    background-color: #8AD453;
     white-space: nowrap;
     vertical-align: middle;
     cursor: pointer;
@@ -80,7 +83,7 @@ h1 {
 
 .btn:hover,
 .btn:focus {
-    color: #ffffff;
+    color: #AE37B2;
     text-decoration: none;
 }
 
