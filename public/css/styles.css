@@ -16,11 +16,12 @@ html, body {
     padding: 0;
 }
 
-.gameArea {
+#gameArea {
     height: 100%;
     width: 100%;
 }
-.center {
+
+.titleWrapper {
     width: 94%;
     height: 40%;
     position: fixed;
@@ -92,6 +93,35 @@ h1 {
     outline: 0;
     -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
     box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+
+
+
+.createGameWrapper {
+    font-family: 'Quicksand', sans-serif;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.createGameWrapper .info{
+    color: #ECFFE0;
+    font-weight: 400;
+    font-size: 2em;
+    margin-top: 1.5em;
+}
+
+.createGameWrapper .infoBig{
+    color: #AE37B2;
+    font-weight: 300;
+}
+
+
+.createGameWrapper #gameURL {
+    font-size: 4em;
+}
+
+.createGameWrapper .gameId {
+    font-size: 8em;
 }
 
 .left {

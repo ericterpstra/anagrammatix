@@ -113,30 +113,27 @@ jQuery(function($){
 
         init: function () {
             App.cacheElements();
+            App.showInitScreen();
             App.bindEvents();
-            $('.bigtext').bigtext();
         },
 
         cacheElements: function () {
             App.$doc = $(document);
 
-            // Sections
+            // Templates
             App.$gameArea = $('#gameArea');
+            App.$templateIntroScreen = $('#intro-screen-template').html();
             App.$templateNewGame = $('#create-game-template').html();
             App.$templateJoinGame = $('#join-game-template').html();
             App.$hostGame = $('#host-game-template').html();
-
-            // Buttons
-            App.$btnCreate = $('#btnCreateGame');
-            App.$btnJoin = $('#btnJoinGame');
         },
 
         bindEvents: function () {
-            App.$btnCreate.on('click', App.onCreateClick);
-            App.$btnJoin.on('click', App.onJoinClick);
-            App.$doc.on('click','#btnStart',App.onPlayerStartClick);
-            App.$doc.on('click','.btnAnswer',App.onPlayerAnswerClick);
-            App.$doc.on('click','#btnPlayerRestart', App.onPlayerRestart);
+            App.$doc.on('click', '#btnCreateGame', App.onCreateClick);
+            App.$doc.on('click', '#btnJoinGame', App.onJoinClick);
+            App.$doc.on('click', '#btnStart',App.onPlayerStartClick);
+            App.$doc.on('click', '.btnAnswer',App.onPlayerAnswerClick);
+            App.$doc.on('click', '#btnPlayerRestart', App.onPlayerRestart);
         },
 
         /* *************************************
@@ -193,6 +190,11 @@ jQuery(function($){
          *             Game Logic              *
          * *********************************** */
 
+        showInitScreen: function() {
+            App.$gameArea.html(App.$templateIntroScreen);
+            $('.bigtext').bigtext();
+        },
+
             // *** HOST ***
 
         hostGameInit: function (data) {
@@ -207,6 +209,7 @@ jQuery(function($){
 
         hostDisplayNewGameScreen : function() {
             App.$gameArea.html(App.$templateNewGame);
+            $('#gameURL').text(window.location.href);
             $('#spanNewGameCode').text(App.gameId);
         },
 

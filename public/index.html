@@ -12,9 +12,14 @@
 <body>
 
 
-    <div class="gameArea">
+    <div id="gameArea">
 
-        <div class="center">
+
+    </div>
+
+    <script id="intro-screen-template" type="text/x-handlebars-template">
+
+        <div class="titleWrapper">
 
             <div class="title bigtext">
                 <div>ANAGRAMMATIX</div>
@@ -30,16 +35,21 @@
         </div>
 
         <div class="footer">
-
+            <!-- Link for Game Instructions go Here -->
         </div>
-
-    </div>
-
+    </script>
 
     <script id="create-game-template" type="text/x-handlebars-template">
-        <p>Go to http://hi.there on your mobile device</p>
-        <p>Enter the following code: <span id="spanNewGameCode">Error!</span></p>
-        <div id="playersWaiting"></div>
+        <div class="createGameWrapper">
+
+            <div class="info">Open this site on your mobile device:</div>
+            <div id="gameURL" class="infoBig">Error!</div>
+
+            <div class="info">Then click <strong>JOIN</strong> and <br/> enter the following code:</div>
+            <div id="spanNewGameCode" class="infoBig gameId">Error!</div>
+
+            <div id="playersWaiting"></div>
+        </div>
     </script>
 
     <script id="join-game-template" type="text/x-handlebars-template">
