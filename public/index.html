@@ -45,7 +45,7 @@
             <div class="info">Open this site on your mobile device:</div>
             <div id="gameURL" class="infoBig">Error!</div>
 
-            <div class="info">Then click <strong>JOIN</strong> and <br/> enter the following code:</div>
+            <div class="info">Then click <strong>JOIN</strong> and <br/> enter the following Game ID:</div>
             <div id="spanNewGameCode" class="infoBig gameId">Error!</div>
 
             <div id="playersWaiting"></div>
@@ -53,19 +53,21 @@
     </script>
 
     <script id="join-game-template" type="text/x-handlebars-template">
-        <div>
-            <label for="inputPlayerName">Your Name:</label>
-            <input id="inputPlayerName" type="text" />
-        </div>
+        <div class="joinGameWrapper">
+            <div class="info">
+                <label for="inputPlayerName">Your Name:</label>
+                <input id="inputPlayerName" type="text" />
+            </div>
 
-        <div>
-            <label for="inputGameId">Game ID:</label>
-            <input id="inputGameId" type="text"/>
-        </div>
+            <div class="info">
+                <label for="inputGameId">Game ID:</label>
+                <input id="inputGameId" type="text"/>
+            </div>
 
-        <div>
-            <button id="btnStart">Start</button>
-            <div id="playerWaitingMessage"></div>
+            <div class="info buttons">
+                <button id="btnStart" class="btn">Start</button>
+                <div id="playerWaitingMessage"></div>
+            </div>
         </div>
     </script>
 

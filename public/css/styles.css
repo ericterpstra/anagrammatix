@@ -97,7 +97,7 @@ h1 {
 
 
 
-.createGameWrapper {
+.createGameWrapper, .joinGameWrapper {
     font-family: 'Quicksand', sans-serif;
     margin: 0 auto;
     text-align: center;
@@ -115,6 +115,49 @@ h1 {
     font-weight: 300;
 }
 
+.info label {
+    display: block;
+}
+
+.info input {
+    text-align: center;
+    padding: 10px;
+    width: 200px;
+    height: 60px;
+    font-family: 'Quicksand', sans-serif;
+    color: #A22FB0;
+    font-weight: 300;
+    font-size: 54px;
+    border: 1px dotted white;
+    border-radius: 10px;
+    background: transparent;
+}
+
+.info input#inputPlayerName {
+    width: 90%;
+}
+
+.joinGameWrapper {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.joinGameWrapper .info {
+    font-size: 1.5em;
+    color: #ECFFE0;
+    height: 30%;
+    padding-top: 3%;
+}
+
+.joinGameWrapper .btn {
+    width: 100%;
+    height: 50%;
+}
+
+#playerWaitingMessage {
+    font-size: .8em;
+}
 
 .createGameWrapper #gameURL {
     font-size: 4em;
@@ -122,6 +165,21 @@ h1 {
 
 .createGameWrapper .gameId {
     font-size: 8em;
+}
+
+#ulAnswers {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#ulAnswers li {
+
+}
+
+.btnAnswer {
+
 }
 
 .left {
