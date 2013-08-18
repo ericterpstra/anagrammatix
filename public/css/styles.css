@@ -97,7 +97,7 @@ h1 {
 
 
 
-.createGameWrapper, .joinGameWrapper {
+.createGameWrapper, .joinGameWrapper, .gameOver {
     font-family: 'Quicksand', sans-serif;
     margin: 0 auto;
     text-align: center;
@@ -175,29 +175,37 @@ h1 {
 }
 
 #ulAnswers li {
-
+    width: 100%;
+    height: 16.6%;
 }
 
 .btnAnswer {
-
+    width: 100%;
+    border-bottom: 1px dotted white;
+    font-weight: 400;
+    font-size: 3em;
+    color: #AE37B2;
 }
 
 #wordArea {
-    height: 88%;
-    width: 100%;
-    margin: 0;
-    padding: 0;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 400;
+    position: absolute;
+    height: 50%;
+    width: 50%;
+    margin: auto;
+    bottom: 0;
+    left: 0;
+    top: 0;
+    right: 0;
 }
 
 #hostWord {
-    text-align: center;
-    height: 50%;
-    display: block;
-    top: 23%;
-    position: relative;
+    height: 100%;
+    width: 100%;
 }
 
-#hostWord h2 {
+#hostWord h2, #btnPlayerRestart h3 {
     font-size: 161px;
     line-height: 1em;
     font-family: 'Quicksand', sans-serif;
@@ -210,6 +218,8 @@ h1 {
 #playerScores {
     height: 10%;
     width: 100%;
+    position: fixed;
+    top: 0;
 }
 
 .playerScore {
@@ -225,6 +235,7 @@ h1 {
     display: inline-block;
     font-size: 1.4EM;
     padding: 2%;
+    min-width: 10%;
     margin: 0;
 }
 
@@ -245,6 +256,22 @@ h1 {
 #player2Score {
     float: right;
     text-align: right;
+}
+
+/* Game Over */
+
+.gameOver {
+    display: block;
+    height: 20%;
+    padding-top: 10%;
+    font-size: 2em;
+}
+
+.btnGameOver {
+    width: 100%;
+    height: 10%;
+    position: fixed;
+    bottom: 0;
 }
 
 .left {

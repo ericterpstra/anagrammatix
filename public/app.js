@@ -232,6 +232,7 @@ jQuery(function($){
 
         hostGameCountdown : function() {
             App.$gameArea.html(App.$hostGame);
+            textFit($('#hostWord')[0],{alignHoriz:true,alignVert:true,widthOnly:true,reProcess:true,maxFontSize:300});
 
             var $secondsLeft = $('#hostWord');
 
@@ -252,7 +253,9 @@ jQuery(function($){
         },
 
         hostNewWord : function(data) {
-            $('#hostWord').html('<h2>' + data.word + '</h2>');
+            $('#hostWord').text(data.word);
+            App.doTextFit('#hostWord');
+
             App.hostData.currentCorrectAnswer = data.answer;
             App.hostData.currentRound = data.round;
         },
@@ -289,7 +292,9 @@ jQuery(function($){
 
             var winner = (p1Score < p2Score) ? p2Name : p1Name;
 
-            $('#gameArea').html( $('<h1/>').text(winner + ' Wins!!') );
+            $('#hostWord').text( winner + ' Wins!!' );
+            App.doTextFit('#hostWord');
+
             App.hostData.numPlayersInRoom = 0;
             App.hostData.isNewGame = true;
         },
@@ -323,6 +328,7 @@ jQuery(function($){
                     .append( $('<li/>')              //  <ul> <li> </li> </ul>
                         .append( $('<button/>')      //  <ul> <li> <button> </button> </li> </ul>
                             .addClass('btnAnswer')   //  <ul> <li> <button class='btnAnswer'> </button> </li> </ul>
+                            .addClass('btn')         //  <ul> <li> <button class='btnAnswer'> </button> </li> </ul>
                             .val(this)               //  <ul> <li> <button class='btnAnswer' value='word'> </button> </li> </ul>
                             .html(this)              //  <ul> <li> <button class='btnAnswer' value='word'>word</button> </li> </ul>
                         )
@@ -333,11 +339,15 @@ jQuery(function($){
         },
 
         playerEndGame : function() {
-            $('#gameArea').html(
-                $('<div>')
-                    .append('<h3>Game Over!</h3>')
-                    .append('<button>Start Again</button>').attr('id','btnPlayerRestart')
-            );
+            $('#gameArea')
+                    .html('<div class="gameOver">Game Over!</div>')
+                    .append(
+                        $('<button>Start Again</button>')
+                            .attr('id','btnPlayerRestart')
+                            .addClass('btn')
+                            .addClass('btnGameOver')
+                    );
+
         },
 
            // *** MISC / UTIL ***
@@ -345,6 +355,7 @@ jQuery(function($){
         countDown : function( $el, startTime, callback) {
 
             $el.text(startTime);
+            App.doTextFit('#hostWord');
 
             console.log('Starting Countdown...');
             var timer = setInterval(countItDown,1000);
@@ -352,6 +363,7 @@ jQuery(function($){
             function countItDown(){
                 startTime -= 1
                 $el.text(startTime);
+                App.doTextFit('#hostWord');
                 if( startTime <= 0 ){
                     console.log('Countdown Finished.');
                     clearInterval(timer);
@@ -360,6 +372,19 @@ jQuery(function($){
                 }
             }
 
+        },
+
+        doTextFit : function(el) {
+            textFit(
+                $(el)[0],
+                {
+                    alignHoriz:true,
+                    alignVert:true,
+                    widthOnly:true,
+                    reProcess:true,
+                    maxFontSize:300
+                }
+            );
         }
 
     };
