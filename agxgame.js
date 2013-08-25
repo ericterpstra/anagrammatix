@@ -7,32 +7,41 @@ exports.initGame = function(sio, socket){
     gameSocket = socket;
     gameSocket.emit('connected', { message: "You are connected!" });
 
-    // Host
+    // Host Events
     gameSocket.on('hostCreateNewGame', hostCreateNewGame);
     gameSocket.on('hostRoomFull', hostPrepareGame);
     gameSocket.on('hostCountdownFinished', hostStartGame);
     gameSocket.on('hostNextRound', hostNextRound);
-    // Player
+
+    // Player Events
     gameSocket.on('playerJoinGame', playerJoinGame);
     gameSocket.on('playerAnswer', playerAnswer);
     gameSocket.on('playerRestart', playerRestart);
 }
 
-// *** HOST ***
+/* *******************************
+   *                             *
+   *       HOST FUNCTIONS        *
+   *                             *
+   ******************************* */
 
+/*
+ * The 'START' button was clicked and 'hostCreateNewGame' event occurred.
+ */
 function hostCreateNewGame() {
-    // Create unique room
+    // Create a unique Socket.IO Room
     var thisGameId = ( Math.random() * 100000 ) | 0;
 
-    //this.set('role','manager');
-
-    // return room id and socket id
+    // Return the Room ID (gameId) and the socket ID (mySocketId) to the browser client
     this.emit('newGameCreated', {gameId: thisGameId, mySocketId: this.id});
 
-    // Join Game room and wait for players
+    // Join the Room and wait for the players
     this.join(thisGameId.toString());
 };
 
+/*
+ * Two players have joined. Alert the host!
+ */
 function hostPrepareGame(gameId) {
     var sock = this;
     var data = {
@@ -43,6 +52,9 @@ function hostPrepareGame(gameId) {
     io.sockets.in(data.gameId).emit('beginNewGame', data);
 }
 
+/*
+ * The Countdown has finished, and the game begins!
+ */
 function hostStartGame(gameId) {
     console.log('Game Started.');
     sendWord(0,gameId);
@@ -52,7 +64,7 @@ function hostNextRound(data) {
     if(data.round < wordPool.length ){
         sendWord(data.round, data.gameId);
     } else {
-        io.sockets.emit('gameOver',data);
+        io.sockets.in(data.gameId).emit('gameOver',data);
     }
 }
 
@@ -90,13 +102,12 @@ function playerRestart(data) {
 
 function sendWord(wordPoolIndex, gameId) {
     var data = getWordData(wordPoolIndex);
-
     io.sockets.in(data.gameId).emit('newWordData', data);
 }
 
 function getWordData(i){
-    var words = wordPool[i].words.sort(easyShuffle);
-    var decoys = wordPool[i].decoys.sort(easyShuffle).slice(0,5);
+    var words = shuffle(wordPool[i].words);
+    var decoys = shuffle(wordPool[i].decoys).slice(0,5);
     var rnd = Math.floor(Math.random() * 5);
     decoys.splice(rnd, 0, words[1]);
 
@@ -110,7 +121,30 @@ function getWordData(i){
     return wordData;
 }
 
-function easyShuffle() {return 0.5 - Math.random()};
+/*
+ * Javascript implementation of Fisher-Yates shuffle algorithm
+ * http://stackoverflow.com/questions/2450954/how-to-randomize-a-javascript-array
+ */
+function shuffle(array) {
+    var currentIndex = array.length;
+    var temporaryValue;
+    var randomIndex;
+
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
+
+        // Pick a remaining element...
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
+
+        // And swap it with the current element.
+        temporaryValue = array[currentIndex];
+        array[currentIndex] = array[randomIndex];
+        array[randomIndex] = temporaryValue;
+    }
+
+    return array;
+}
 
 var wordPool = [
     {
@@ -127,7 +161,7 @@ var wordPool = [
         "words"  : [ "spat","past","pats","taps" ],
         "decoys" : [ "pots","laps","step","lets","pint","atop","tapa","rapt","swap","yaps" ]
     },
-    /*
+
     {
         "words"  : [ "nest","sent","nets","tens" ],
         "decoys" : [ "tend","went","lent","teen","neat","ante","tone","newt","vent","elan" ]
@@ -162,5 +196,4 @@ var wordPool = [
         "words"  : [ "stone","tones","steno","onset" ],
         "decoys" : [ "snout","tongs","stent","tense","terns","santo","stony","toons","snort","stint" ]
     }
-    */
 ]

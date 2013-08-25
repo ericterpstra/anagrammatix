@@ -2,10 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
+
+    <!-- Ensure that everything scales appropriately on a mobile device -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    
-    <link href='http://fonts.googleapis.com/css?family=Lato:300|Quicksand' rel='stylesheet' type='text/css'>
+
+    <!-- Let's borrow a cool looking Font from Google -->
     <link href='http://fonts.googleapis.com/css?family=Quicksand:300,400,700' rel='stylesheet' type='text/css'>
+
     <link href="css/styles.css" rel="stylesheet">
 </head>
 
@@ -13,16 +16,16 @@
 
 
     <div id="gameArea">
-
-
+        <!-- This is where the templates defined below will be used -->
     </div>
 
-    <script id="intro-screen-template" type="text/x-handlebars-template">
+    <!-- Main Title Screen that appears when the page loads for the first time -->
+    <script id="intro-screen-template" type="text/template">
 
         <div class="titleWrapper">
 
-            <div class="title bigtext">
-                <div>ANAGRAMMATIX</div>
+            <div class="title">
+                ANAGRAMMATIX
             </div>
 
             <div class="buttons">
@@ -34,12 +37,10 @@
 
         </div>
 
-        <div class="footer">
-            <!-- Link for Game Instructions go Here -->
-        </div>
     </script>
 
-    <script id="create-game-template" type="text/x-handlebars-template">
+    <!-- This screen appears when a user clicks "START" on the Title Screen -->
+    <script id="create-game-template" type="text/template">
         <div class="createGameWrapper">
 
             <div class="info">Open this site on your mobile device:</div>
@@ -52,7 +53,8 @@
         </div>
     </script>
 
-    <script id="join-game-template" type="text/x-handlebars-template">
+    <!-- This scrreen appears when a player clicks "JOIN" on the Title Screen -->
+    <script id="join-game-template" type="text/template">
         <div class="joinGameWrapper">
             <div class="info">
                 <label for="inputPlayerName">Your Name:</label>
@@ -71,7 +73,8 @@
         </div>
     </script>
 
-    <script id="host-game-template" type="text/x-handlebars-template">
+    <!-- This is the 'Host' screen. It displays the word for each player to match -->
+    <script id="host-game-template" type="text/template">
         <div id="wordArea">
             <div id="hostWord">5</div>
         </div>
@@ -85,11 +88,22 @@
         </div>
     </script>
 
-<script src="libs/jquery-2.0.2.min.js"></script>
-<script src="libs/bigtext.js"></script>
-<script src="libs/textFit.min.js"></script>
-<script src="/socket.io/socket.io.js"></script>
-<script src="app.js"></script>
+    <!-- JavaScript Libraries -->
+
+    <!-- jQuery! -->
+    <script src="libs/jquery-2.0.2.min.js"></script>
+
+    <!-- TextFit resizes text to fill a container.
+        It's used so the titles and game words fit properly on any size screen.
+        https://github.com/STRML/textFit   -->
+    <script src="libs/textFit.min.js"></script>
+
+    <!-- If Socket.IO is used with Express, then the /socket.io/ path will
+        serve the proper Socket.IO javascript files used by the browser -->
+    <script src="/socket.io/socket.io.js"></script>
+
+    <!-- app.js is where all the client-side Anagrammatix game logic -->
+    <script src="app.js"></script>
 
 </body>
 </html>

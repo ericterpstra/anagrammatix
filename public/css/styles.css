@@ -1,10 +1,9 @@
 /*
 
-Dark Green: #78BD4C
-Mid Green:  #A8FF56
-Lite : #ECFFE0
-Dark Prple: #A22FB0
-Lite Prple: #FAD1FF
+ Dark Green : #78BD4C
+  Mid Green : #A8FF56
+       Lite : #ECFFE0
+Dark Purple : #A22FB0
 
 */
 
@@ -16,35 +15,12 @@ html, body {
     padding: 0;
 }
 
-#gameArea {
-    height: 100%;
-    width: 100%;
-}
 
-.titleWrapper {
-    width: 94%;
-    height: 40%;
-    position: fixed;
-    left: 3%;
-    top: 30%;
-}
 
-.title {
-    margin: 0px auto;
-    text-align: center;
-    width: 100%;
-    /*height:60%;*/
-    font-family: 'Quicksand', sans-serif;
-    color: #ECFFE0;
-    font-weight: 300;
-}
-
-h1 {
-    margin: 0;
-    font-family: 'Quicksand', sans-serif;
-    color: #ECFFE0;
-    font-weight: 300;
-}
+/* ******************************
+              BUTTONS!
+     (Inspired by Bootstrap 3.0)
+   ****************************** */
 
 .buttons {
     height: 20%;
@@ -95,7 +71,46 @@ h1 {
     box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
 }
 
+.left {
+    float: left;
+}
 
+.right {
+    float: right;
+}
+
+/* ******************************
+          TITLE SCREEN
+     (intro-screen-template)
+   ****************************** */
+
+#gameArea {
+    height: 100%;
+    width: 100%;
+}
+
+.titleWrapper {
+    width: 94%;
+    height: 40%;
+    position: fixed;
+    left: 3%;
+    top: 30%;
+}
+
+.title {
+    margin: 0px auto;
+    text-align: center;
+    width: 100%;
+    font-family: 'Quicksand', sans-serif;
+    color: #ECFFE0;
+    font-weight: 300;
+}
+
+
+/* ******************************
+          START SCREEN
+     (create-game-template)
+   ****************************** */
 
 .createGameWrapper, .joinGameWrapper, .gameOver {
     font-family: 'Quicksand', sans-serif;
@@ -137,6 +152,12 @@ h1 {
     width: 90%;
 }
 
+
+/* ******************************
+           JOIN SCREEN
+      (join-game-template)
+   ****************************** */
+
 .joinGameWrapper {
     margin: 0;
     padding: 0;
@@ -167,6 +188,14 @@ h1 {
     font-size: 8em;
 }
 
+
+
+/* ******************************
+          PLAYER GAME SCREEN
+
+   ****************************** */
+
+
 #ulAnswers {
     width: 100%;
     height: 100%;
@@ -187,6 +216,14 @@ h1 {
     color: #AE37B2;
 }
 
+
+
+/* ******************************
+            HOST SCREEN
+       (host-game-template)
+   ****************************** */
+
+/* Absolute Centering: http://coding.smashingmagazine.com/2013/08/09/absolute-horizontal-vertical-centering-css/ */
 #wordArea {
     font-family: 'Quicksand', sans-serif;
     font-weight: 400;
@@ -258,7 +295,11 @@ h1 {
     text-align: right;
 }
 
-/* Game Over */
+
+/* ******************************
+          TITLE SCREEN
+     (intro-screen-template)
+   ****************************** */
 
 .gameOver {
     display: block;
@@ -274,10 +315,4 @@ h1 {
     bottom: 0;
 }
 
-.left {
-    float: left;
-}
 
-.right {
-    float: right;
-}

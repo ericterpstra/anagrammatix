@@ -9,20 +9,14 @@ jQuery(function($){
         },
 
         bindEvents : function() {
-            // Both
             IO.socket.on('connected', IO.onConnected );
             IO.socket.on('error', IO.error );
             IO.socket.on('newWordData', IO.onNewWordData);
             IO.socket.on('gameOver', IO.gameOver);
-
-            // host
             IO.socket.on('newGameCreated', IO.onNewGameCreated );
             IO.socket.on('beginNewGame', IO.beginNewGame );
             IO.socket.on('hostCheckAnswer', IO.hostCheckAnswer);
-
-            // Player
             IO.socket.on('playerJoinedRoom', IO.playerJoinedRoom );
-
         },
 
         onConnected : function(data) {
@@ -192,7 +186,7 @@ jQuery(function($){
 
         showInitScreen: function() {
             App.$gameArea.html(App.$templateIntroScreen);
-            $('.bigtext').bigtext();
+            App.doTextFit('.title');
         },
 
             // *** HOST ***
@@ -232,7 +226,7 @@ jQuery(function($){
 
         hostGameCountdown : function() {
             App.$gameArea.html(App.$hostGame);
-            textFit($('#hostWord')[0],{alignHoriz:true,alignVert:true,widthOnly:true,reProcess:true,maxFontSize:300});
+            App.doTextFit('#hostWord');
 
             var $secondsLeft = $('#hostWord');
 
@@ -282,19 +276,29 @@ jQuery(function($){
         },
 
         hostEndGame : function(data) {
+            // Get the data for player 1 from the host screen
             var $p1 = $('#player1Score');
             var p1Score = +$p1.find('.score').text();
             var p1Name = $p1.find('.playerName').text();
 
+            // Get the data for player 2 from the host screen
             var $p2 = $('#player2Score');
             var p2Score = +$p2.find('.score').text();
             var p2Name = $p2.find('.playerName').text();
 
+            // Find the winner based on the scores
             var winner = (p1Score < p2Score) ? p2Name : p1Name;
+            var tie = (p1Score === p2Score);
 
-            $('#hostWord').text( winner + ' Wins!!' );
+            // Display the winner (or tie game message)
+            if(tie){
+                $('#hostWord').text("It's a Tie!");
+            } else {
+                $('#hostWord').text( winner + ' Wins!!' );
+            }
             App.doTextFit('#hostWord');
 
+            // Reset game data
             App.hostData.numPlayersInRoom = 0;
             App.hostData.isNewGame = true;
         },
@@ -317,7 +321,8 @@ jQuery(function($){
 
         playerGetReady : function(hostData) {
             App.playerData.hostSocketId = hostData.mySocketId;
-            $('#gameArea').html('<h4>Get Ready</h4>');
+            $('#gameArea')
+                .html('<div class="gameOver">Get Ready!</div>');
         },
 
         playerNewWord : function(data) {
