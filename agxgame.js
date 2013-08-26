@@ -1,7 +1,12 @@
-//var async = require('async');
 var io;
 var gameSocket;
 
+/**
+ * This function is called by appserver.js to initialize a new game instance.
+ *
+ * @param sio The Socket.IO library
+ * @param socket The socket object for the connected client.
+ */
 exports.initGame = function(sio, socket){
     io = sio;
     gameSocket = socket;
@@ -25,7 +30,7 @@ exports.initGame = function(sio, socket){
    *                             *
    ******************************* */
 
-/*
+/**
  * The 'START' button was clicked and 'hostCreateNewGame' event occurred.
  */
 function hostCreateNewGame() {
@@ -60,20 +65,35 @@ function hostStartGame(gameId) {
     sendWord(0,gameId);
 };
 
+/**
+ * A player answered correctly. Time for the next word.
+ * @param data Sent from the client. Contains the current round and gameId (room)
+ */
 function hostNextRound(data) {
     if(data.round < wordPool.length ){
+        // Send a new set of words back to the host and players.
         sendWord(data.round, data.gameId);
     } else {
+        // If the current round exceeds the number of words, send the 'gameOver' event.
         io.sockets.in(data.gameId).emit('gameOver',data);
     }
 }
 
 // *** PLAYER ***
 
-// data.gameId, data.playerName
+/**
+ * A player clicked the 'START GAME' button.
+ * Attempt to connect them to the room that matches
+ * the gameId entered by the player.
+ * @param data Contains data entered via player's input - playerName and gameId.
+ */
 function playerJoinGame(data) {
-    console.log('Player ' + data.playerName + 'attempting to join game: ' + data.gameId );
+    //console.log('Player ' + data.playerName + 'attempting to join game: ' + data.gameId );
+
+    // A reference to the player's Socket.IO socket object
     var sock = this;
+
+    // Look up the room ID in the Socket.IO manager object.
     var room = gameSocket.manager.rooms["/" + data.gameId];
 
     if( room != undefined ){
