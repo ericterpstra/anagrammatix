@@ -30,7 +30,7 @@
 
             <div class="buttons">
 
-                <button id="btnCreateGame" class="btn left">START</button>
+                <button id="btnCreateGame" class="btn left">CREATE</button>
                 <button id="btnJoinGame" class="btn right">JOIN</button>
                 <div style="clear:both"></div>
             </div>
@@ -39,7 +39,7 @@
 
     </script>
 
-    <!-- This screen appears when a user clicks "START" on the Title Screen -->
+    <!-- This screen appears when a user clicks "CREATE" on the Title Screen -->
     <script id="create-game-template" type="text/template">
         <div class="createGameWrapper">
 
@@ -97,6 +97,10 @@
         It's used so the titles and game words fit properly on any size screen.
         https://github.com/STRML/textFit   -->
     <script src="libs/textFit.min.js"></script>
+
+    <!-- FastClick is used to eliminate the 300ms delay when clicking items on a mobile device
+        https://github.com/ftlabs/fastclick -->
+    <script src="libs/fastclick.js"></script>
 
     <!-- If Socket.IO is used with Express, then the /socket.io/ path will
         serve the proper Socket.IO javascript files used by the browser -->

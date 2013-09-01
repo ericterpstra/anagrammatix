@@ -115,9 +115,6 @@ jQuery(function($){
 
     var App = {
 
-        //
-        // e
-
         /**
          * Keep track of the gameId, which is identical to the ID
          * of the Socket.IO Room used for the players and host to communicate
@@ -154,6 +151,9 @@ jQuery(function($){
             App.cacheElements();
             App.showInitScreen();
             App.bindEvents();
+
+            // Initialize the fastclick library
+            FastClick.attach(document.body);
         },
 
         /**
@@ -251,7 +251,7 @@ jQuery(function($){
              * Show the Host screen containing the game URL and unique game ID
              */
             displayNewGameScreen : function() {
-                // Fill the game screen with the appropriate HTMl
+                // Fill the game screen with the appropriate HTML
                 App.$gameArea.html(App.$templateNewGame);
 
                 // Display the URL on screen
@@ -263,7 +263,7 @@ jQuery(function($){
 
             /**
              * Update the Host screen when the first player joins
-             * @param data
+             * @param data{{playerName: string}}
              */
             updateWaitingScreen: function(data) {
                 // If this is a restarted game, show the screen.
