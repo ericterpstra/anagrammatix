@@ -1,7 +1,7 @@
 // Import the Express module
 var express = require('express');
 
-// Import the 'path' moduel (packaged with Node.js)
+// Import the 'path' module (packaged with Node.js)
 var path = require('path');
 
 // Create a new instance of Express
@@ -14,9 +14,6 @@ var agx = require('./agxgame');
 app.configure(function() {
     // Turn down the logging activity
     app.use(express.logger('dev'));
-
-    // Allow Express to parse request bodies
-    app.use(express.bodyParser());
 
     // Serve static html, js, css, and image files from the 'public' directory
     app.use(express.static(path.join(__dirname,'public')));
