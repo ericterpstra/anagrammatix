@@ -7,8 +7,8 @@ A multi-player, multi-screen game built to experiment with Socket.IO and Node.js
 1. Ensure Node.js is installed
 2. Clone this repository - `git clone https://github.com/ericterpstra/anagrammatix.git`
 3. Install the dependences:
-   i. `cd anagrammatix`
-   ii. `npm install`
+    1. `cd anagrammatix`
+    2. `npm install`
 4. Start the server: `node index.js`
 5. Visit http://127.0.0.1:8888 in a browser and click CREATE.
 
