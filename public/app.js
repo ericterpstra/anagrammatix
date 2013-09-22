@@ -14,7 +14,7 @@ jQuery(function($){
          * to the Socket.IO server
          */
         init: function() {
-            IO.socket = io.connect('http://localhost');
+            IO.socket = io.connect();
             IO.bindEvents();
         },
 
@@ -193,8 +193,7 @@ jQuery(function($){
          */
         showInitScreen: function() {
             App.$gameArea.html(App.$templateIntroScreen);
-            //App.doTextFit('.title');
-            $('.title').fitText();
+            App.doTextFit('.title');
         },
 
 
