@@ -15,9 +15,6 @@ app.configure(function() {
     // Turn down the logging activity
     app.use(express.logger('dev'));
 
-    // Allow Express to parse request bodies
-    app.use(express.bodyParser());
-
     // Serve static html, js, css, and image files from the 'public' directory
     app.use(express.static(path.join(__dirname,'public')));
 });
