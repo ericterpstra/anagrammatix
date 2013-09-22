@@ -1,7 +1,7 @@
 // Import the Express module
 var express = require('express');
 
-// Import the 'path' moduel (packaged with Node.js)
+// Import the 'path' module (packaged with Node.js)
 var path = require('path');
 
 // Create a new instance of Express

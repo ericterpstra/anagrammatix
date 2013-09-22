@@ -46,6 +46,7 @@ function hostCreateNewGame() {
 
 /*
  * Two players have joined. Alert the host!
+ * @param gameId The game ID / room ID
  */
 function hostPrepareGame(gameId) {
     var sock = this;
@@ -53,12 +54,13 @@ function hostPrepareGame(gameId) {
         mySocketId : sock.id,
         gameId : gameId
     };
-    console.log("All Players Present. Preparing game...");
+    //console.log("All Players Present. Preparing game...");
     io.sockets.in(data.gameId).emit('beginNewGame', data);
 }
 
 /*
  * The Countdown has finished, and the game begins!
+ * @param gameId The game ID / room ID
  */
 function hostStartGame(gameId) {
     console.log('Game Started.');

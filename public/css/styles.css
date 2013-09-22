@@ -22,13 +22,6 @@ html, body {
      (Inspired by Bootstrap 3.0)
    ****************************** */
 
-.buttons {
-    height: 20%;
-    width: 100%;
-    margin-top: 1%;
-    text-align: center;
-}
-
 .btn {
     display: inline-block;
     height: 100%;
@@ -90,11 +83,16 @@ html, body {
 }
 
 .titleWrapper {
-    width: 94%;
-    height: 40%;
-    position: fixed;
-    left: 3%;
-    top: 30%;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 400;
+    position: absolute;
+    height: 50%;
+    width: 96%;
+    margin: auto;
+    bottom: 0;
+    left: 0;
+    top: 0;
+    right: 0;
 }
 
 .title {
@@ -106,6 +104,10 @@ html, body {
     font-weight: 300;
 }
 
+.buttons {
+    width: 100%;
+    text-align: center;
+}
 
 /* ******************************
           START SCREEN
@@ -125,7 +127,7 @@ html, body {
     margin-top: 1.5em;
 }
 
-.createGameWrapper .infoBig{
+.createGameWrapper{
     color: #AE37B2;
     font-weight: 300;
 }
@@ -162,13 +164,14 @@ html, body {
     margin: 0;
     padding: 0;
     height: 100%;
+    min-height: 320px;
 }
 
 .joinGameWrapper .info {
     font-size: 1.5em;
     color: #ECFFE0;
     height: 30%;
-    padding-top: 3%;
+    padding-top: 1%;
 }
 
 .joinGameWrapper .btn {

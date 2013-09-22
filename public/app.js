@@ -35,9 +35,8 @@ jQuery(function($){
 
         /**
          * The client is successfully connected!
-         * @param data
          */
-        onConnected : function(data) {
+        onConnected : function() {
             // Cache a copy of the client's socket.IO session ID on the App
             App.mySocketId = IO.socket.socket.sessionid;
             // console.log(data.message);
@@ -194,7 +193,8 @@ jQuery(function($){
          */
         showInitScreen: function() {
             App.$gameArea.html(App.$templateIntroScreen);
-            App.doTextFit('.title');
+            //App.doTextFit('.title');
+            $('.title').fitText();
         },
 
 
@@ -256,6 +256,7 @@ jQuery(function($){
 
                 // Display the URL on screen
                 $('#gameURL').text(window.location.href);
+                App.doTextFit('#gameURL');
 
                 // Show the gameId / room id on screen
                 $('#spanNewGameCode').text(App.gameId);
@@ -464,7 +465,7 @@ jQuery(function($){
              *  Click handler for the Player hitting a word in the word list.
              */
             onPlayerAnswerClick: function() {
-                console.log('Clicked Answer Button');
+                // console.log('Clicked Answer Button');
                 var $btn = $(this);      // the tapped button
                 var answer = $btn.val(); // The tapped word
 
