@@ -12,16 +12,16 @@ There is *sometimes* a working demo up at http://agx.terpstra.co - but no guaran
     1. `cd anagrammatix`
     2. `npm install`
 4. Start the server: `node index.js`
-5. Visit http://127.0.0.1:8888 in a browser and click CREATE.
+5. Visit http://127.0.0.1:8080 in a browser and click CREATE.
 
 ## To Play
 
 ### Setup
 1. Ensure 3 devices are on a local network, or that the application server is accessable by 3 devices.
 2. Start the Anagrammatix application
-3. Visit http://your.ip.address:8888 on a PC, Tablet, SmartTV or other large screen device
+3. Visit http://your.ip.address:8080 on a PC, Tablet, SmartTV or other large screen device
 4. Click CREATE
-5. On a mobile device, visit http://your.ip.address:8888
+5. On a mobile device, visit http://your.ip.address:8080
 6. Click JOIN on the mobile device screen.
 7. Follow the on-screen instructions to join a game.
 8. Find an opponent and have him/her repeat steps 5-7 on another mobile device.

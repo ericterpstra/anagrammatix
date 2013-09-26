@@ -612,7 +612,7 @@ jQuery(function($){
                 $(el)[0],
                 {
                     alignHoriz:true,
-                    alignVert:true,
+                    alignVert:false,
                     widthOnly:true,
                     reProcess:true,
                     maxFontSize:300
