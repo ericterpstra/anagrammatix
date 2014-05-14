@@ -90,6 +90,7 @@ jQuery(function($){
          */
         hostCheckAnswer : function(data) {
             if(App.myRole === 'Host') {
+            	console.log('data received by host.')
                 App.Host.checkAnswer(data);
             }
         },
@@ -223,12 +224,23 @@ jQuery(function($){
              * A reference to the correct answer for the current round.
              */
             currentCorrectAnswer: '',
+            
+            /**
+             * Number of current answers.
+             */
+             
+            numberOfCurrentAnswers : 0,
 
+			 /**
+			  * Variable containing the countdown for each round
+			  */
+			  countDownVariable : '',
             /**
              * Handler for the "Start" button on the Title Screen.
              */
             onCreateClick: function () {
-                // console.log('Clicked "Create A Game"');
+                console.log('Clicked "Create A Game"');
+                App.Host.numberOfPlayers = parseInt(prompt("How many players?"));
                 IO.socket.emit('hostCreateNewGame');
             },
 
@@ -271,22 +283,33 @@ jQuery(function($){
                     App.Host.displayNewGameScreen();
                 }
                 // Update host screen
-                $('#playersWaiting')
+                //console.log($('#playersWaiting').append('<p/>').append('<p>'+'Player ' + data.playerName + ' joined the game.').text());
+                /*$('#playersWaiting')
                     .append('<p/>')
                     .text('Player ' + data.playerName + ' joined the game.');
-
+				*/
+				
+				var newTextPlayersWaiting = $('#playersWaiting').html() + '<p>'+'Player ' + data.playerName + ' joined the game.' + '</p>';
+				$('#playersWaiting').html(newTextPlayersWaiting);
+                
                 // Store the new player's data on the Host.
                 App.Host.players.push(data);
 
                 // Increment the number of players in the room
                 App.Host.numPlayersInRoom += 1;
 
-                // If two players have joined, start the game!
-                if (App.Host.numPlayersInRoom === 2) {
-                    // console.log('Room is full. Almost ready!');
+                // If all players have joined, start the game!
+                if (App.Host.numPlayersInRoom ===  parseInt(App.Host.numberOfPlayers)) {
+                    console.log('Room is full. Almost ready!');
 
                     // Let the server know that two players are present.
                     IO.socket.emit('hostRoomFull',App.gameId);
+                    
+                    // Initialize the attributes of the players
+                    for (var i=0; i<App.Host.numPlayersInRoom; i++){
+                    	App.Host.players[i].hasAlreadyAnswered = false;
+                    	App.Host.players[i].correctAnswer = false;
+                    }
                 }
             },
 
@@ -304,21 +327,56 @@ jQuery(function($){
                 App.countDown( $secondsLeft, 5, function(){
                     IO.socket.emit('hostCountdownFinished', App.gameId);
                 });
-
+				
+				// Adding the player score area
+				for (var i=0; i< App.Host.numPlayersInRoom; i++){
+					console.log($('#playerScores').html());
+					var newTextPlayersScores = $('#playerScores').html() + "<div id='player"+ (i+1) +"Score' class='playerScore'> <span class='score'>0</span><span class='playerName'>Player" + (i+1) +"</span> </div>";
+					console.log(newTextPlayersScores);
+					$('#playerScores').html(newTextPlayersScores);
+				}
+				console.log($('#playerScores').html());
+				
                 // Display the players' names on screen
-                $('#player1Score')
+                for (var i=0; i< App.Host.numPlayersInRoom; i++){
+                	$('#player'+(i+1)+'Score')
+                    .find('.playerName')
+                    .html(App.Host.players[i].playerName);
+				}
+				/*
+				$('#player1Score')
                     .find('.playerName')
                     .html(App.Host.players[0].playerName);
 
                 $('#player2Score')
                     .find('.playerName')
                     .html(App.Host.players[1].playerName);
-
+                */
+                    
                 // Set the Score section on screen to 0 for each player.
-                $('#player1Score').find('.score').attr('id',App.Host.players[0].mySocketId);
-                $('#player2Score').find('.score').attr('id',App.Host.players[1].mySocketId);
+                for (var i=0; i< App.Host.numPlayersInRoom; i++){
+                	$('#player'+(i+1)+'Score').find('.score').attr('id',App.Host.players[i].mySocketId);
+                }
+                //$('#player1Score').find('.score').attr('id',App.Host.players[0].mySocketId);
+                //$('#player2Score').find('.score').attr('id',App.Host.players[1].mySocketId);
             },
-
+            
+            /**
+             * Display the countdown for each round
+             */
+			roundCountDown : function() {
+				//App.$gameArea.html(App.$hostGame);
+				//App.doTextFit('#countDownPerRound');
+				
+				// begin the on-screen countdown timer
+				var $secondsLeftRound = $('#countDownPerRound');
+				//console.log('$secondsLeftRound' + $secondsLeftRound);
+				
+				App.Host.countDownVariable = App.countDown($secondsLeftRound, 10, App.Host.endThisRound);
+				
+			},
+			
+			
             /**
              * Show the word for the current round on screen.
              * @param data{{round: *, word: *, answer: *, list: Array}}
@@ -331,6 +389,9 @@ jQuery(function($){
                 // Update the data for the current round
                 App.Host.currentCorrectAnswer = data.answer;
                 App.Host.currentRound = data.round;
+                
+                App.Host.roundCountDown();
+                //App.Host.countDownForRound(10000);
             },
 
             /**
@@ -338,11 +399,23 @@ jQuery(function($){
              * @param data{{round: *, playerId: *, answer: *, gameId: *}}
              */
             checkAnswer : function(data) {
+            	console.log("Called checkAnswer");
+            	
                 // Verify that the answer clicked is from the current round.
                 // This prevents a 'late entry' from a player whos screen has not
                 // yet updated to the current round.
                 if (data.round === App.currentRound){
-
+					
+					// Note which player has just answered
+					for (var i=0; i<App.Host.numPlayersInRoom; i++){
+						if (App.Host.players[i].mySocketId === data.playerId){
+							App.Host.players[i].hasAlreadyAnswered = true;
+							if( App.Host.currentCorrectAnswer === data.answer ) {
+								App.Host.players[i].correctAnswer = true;
+							}
+						}
+					}
+					/*
                     // Get the player's score
                     var $pScore = $('#' + data.playerId);
 
@@ -351,26 +424,82 @@ jQuery(function($){
                         // Add 5 to the player's score
                         $pScore.text( +$pScore.text() + 5 );
 
-                        // Advance the round
-                        App.currentRound += 1;
-
-                        // Prepare data to send to the server
-                        var data = {
-                            gameId : App.gameId,
-                            round : App.currentRound
-                        }
-
-                        // Notify the server to start the next round.
-                        IO.socket.emit('hostNextRound',data);
-
                     } else {
                         // A wrong answer was submitted, so decrement the player's score.
                         $pScore.text( +$pScore.text() - 3 );
                     }
+                    */
+                    var finished = true;
+					
+					for (var i=0; i<App.Host.numPlayersInRoom; i++){
+						finished = finished && App.Host.players[i].hasAlreadyAnswered;
+						console.log(App.Host.players[i]);
+					}
+					console.log("Finished: "+finished);
+					
+					if (finished){
+						console.log("All participants have answered the question.");
+						App.Host.endThisRound();
+					}
                 }
             },
-
-
+			
+			/**
+			 * Function to be called at the end of a round
+			 */
+			 
+			 endThisRound : function(){
+			 	// Stops the timer for this round
+			 	clearInterval(App.Host.countDownVariable);
+			 	
+			 	// Advance the round
+				App.currentRound += 1;
+				
+				// Calculates scores
+				App.Host.calculateScores();
+				
+				// Prepare data to send to the server
+				var data = {
+					gameId : App.gameId,
+					round : App.currentRound
+				}
+				
+				for (var i=0; i<App.Host.numPlayersInRoom; i++){
+					App.Host.players[i].hasAlreadyAnswered = false;
+				}
+				
+				// Stops the timeout
+				clearTimeout(App.Host.timeOut);
+				
+				// Notify the server to start the next round.
+				IO.socket.emit('hostNextRound',data);
+			 },
+			 
+			 
+			/**
+			 * Countdown for specific round
+			 */
+			 countDownForRound : function(time){
+			 	App.Host.timeOut = setTimeout(App.Host.endThisRound, time);
+			 },
+			 
+			 
+			/**
+			 * Calculate the scores after the end of the round*
+			 */
+			 calculateScores : function(){
+			 	for (var i=0; i<App.Host.numPlayersInRoom; i++){
+			 		var $pScore = $('#' + App.Host.players[i].mySocketId);
+			 		if (App.Host.players[i].correctAnswer){
+			 			$pScore.text( +$pScore.text() + 5 );
+			 		}
+			 		else{
+			 			$pScore.text( +$pScore.text() - 3 );
+			 		}
+			 		App.Host.players[i].correctAnswer = false;
+			 	}
+			 },
+			 
             /**
              * All 10 rounds have played out. End the game.
              * @param data
@@ -428,7 +557,7 @@ jQuery(function($){
              * The player's name entered on the 'Join' screen.
              */
             myName: '',
-
+			 
             /**
              * Click handler for the 'JOIN' button
              */
@@ -464,7 +593,7 @@ jQuery(function($){
              *  Click handler for the Player hitting a word in the word list.
              */
             onPlayerAnswerClick: function() {
-                // console.log('Clicked Answer Button');
+                console.log('Clicked Answer Button');
                 var $btn = $(this);      // the tapped button
                 var answer = $btn.val(); // The tapped word
 
@@ -573,11 +702,16 @@ jQuery(function($){
          * @param callback The function to call when the timer ends.
          */
         countDown : function( $el, startTime, callback) {
-
+			
+			console.log("$el", $el);
+			console.log("$el[selector]",$el['selector']);
+			
             // Display the starting time on the screen.
             $el.text(startTime);
-            App.doTextFit('#hostWord');
-
+            //App.doTextFit('#hostWord');
+            if ($el['selector']!=='#countDownPerRound'){
+            	App.doTextFit($el['selector']);
+			}
             // console.log('Starting Countdown...');
 
             // Start a 1 second timer
@@ -587,7 +721,10 @@ jQuery(function($){
             function countItDown(){
                 startTime -= 1
                 $el.text(startTime);
-                App.doTextFit('#hostWord');
+                //App.doTextFit('#hostWord');
+                if ($el['selector']!=='#countDownPerRound'){
+                	App.doTextFit($el['selector']);
+                }
 
                 if( startTime <= 0 ){
                     // console.log('Countdown Finished.');
@@ -598,7 +735,7 @@ jQuery(function($){
                     return;
                 }
             }
-
+			return timer
         },
 
         /**

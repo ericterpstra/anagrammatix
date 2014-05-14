@@ -36,7 +36,6 @@ exports.initGame = function(sio, socket){
 function hostCreateNewGame() {
     // Create a unique Socket.IO Room
     var thisGameId = ( Math.random() * 100000 ) | 0;
-
     // Return the Room ID (gameId) and the socket ID (mySocketId) to the browser client
     this.emit('newGameCreated', {gameId: thisGameId, mySocketId: this.id});
 
@@ -72,10 +71,13 @@ function hostStartGame(gameId) {
  * @param data Sent from the client. Contains the current round and gameId (room)
  */
 function hostNextRound(data) {
+	console.log('Asked for a new round');
     if(data.round < wordPool.length ){
+    	console.log('Not at the end of the pool, creating a new set of words.')
         // Send a new set of words back to the host and players.
         sendWord(data.round, data.gameId);
     } else {
+    	console.log('End of game.')
         // If the current round exceeds the number of words, send the 'gameOver' event.
         io.sockets.in(data.gameId).emit('gameOver',data);
     }
@@ -125,7 +127,7 @@ function playerJoinGame(data) {
  * @param data gameId
  */
 function playerAnswer(data) {
-    // console.log('Player ID: ' + data.playerId + ' answered a question with: ' + data.answer);
+    console.log('Player ID: ' + data.playerId + ' answered a question with: ' + data.answer);
 
     // The player's answer is attached to the data object.  \
     // Emit an event with the answer so it can be checked by the 'Host'
