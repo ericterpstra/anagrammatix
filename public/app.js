@@ -27,7 +27,8 @@ jQuery(function($){
             IO.socket.on('newGameCreated', IO.onNewGameCreated );
             IO.socket.on('playerJoinedRoom', IO.playerJoinedRoom );
             IO.socket.on('beginNewGame', IO.beginNewGame );
-            IO.socket.on('newWordData', IO.onNewWordData);
+            // IO.socket.on('newWordData', IO.onNewWordData);
+            IO.socket.on('newQuestionData', IO.onNewQuestionData);
             IO.socket.on('hostCheckAnswer', IO.hostCheckAnswer);
             IO.socket.on('gameOver', IO.gameOver);
             IO.socket.on('error', IO.error );
@@ -73,9 +74,19 @@ jQuery(function($){
         },
 
         /**
-         * A new set of words for the round is returned from the server.
+         * A new question for the round is returned from the server.
          * @param data
          */
+        onNewQuestionData : function(data) {
+            // Update the current round
+            App.currentRound = data.round;
+
+            // Change the word for the Host and Player
+            App[App.myRole].newQuestion(data);
+        },
+
+        /*
+        // Event on NewWordData
         onNewWordData : function(data) {
             // Update the current round
             App.currentRound = data.round;
@@ -83,6 +94,8 @@ jQuery(function($){
             // Change the word for the Host and Player
             App[App.myRole].newWord(data);
         },
+        */
+
 
         /**
          * A player answered. If this is the host, check the answer.
@@ -378,9 +391,27 @@ jQuery(function($){
 			
 			
             /**
-             * Show the word for the current round on screen.
+             * Show the question for the current round on screen.
              * @param data{{round: *, word: *, answer: *, list: Array}}
              */
+            newQuestion : function(data) {
+                // Insert the new word into the DOM
+                $('#hostWord').text(data.question);
+                App.doTextFit('#hostWord');
+
+                // Update the data for the current round
+                App.Host.currentCorrectAnswer = data.answer;
+                App.Host.currentRound = data.round;
+                
+                App.Host.roundCountDown();
+                //App.Host.countDownForRound(10000);
+            },
+
+
+            /**
+             * Show the word for the current round on screen.
+             * @param data{{round: *, word: *, answer: *, list: Array}}
+             
             newWord : function(data) {
                 // Insert the new word into the DOM
                 $('#hostWord').text(data.word);
@@ -393,6 +424,7 @@ jQuery(function($){
                 App.Host.roundCountDown();
                 //App.Host.countDownForRound(10000);
             },
+            */
 
             /**
              * Check the answer clicked by a player.
@@ -651,7 +683,7 @@ jQuery(function($){
              * Show the list of words for the current round.
              * @param data{{round: *, word: *, answer: *, list: Array}}
              */
-            newWord : function(data) {
+            newQuestion : function(data) {
                 // Create an unordered list element
                 var $list = $('<ul/>').attr('id','ulAnswers');
 
@@ -672,6 +704,27 @@ jQuery(function($){
                 // Insert the list onto the screen.
                 $('#gameArea').html($list);
             },
+
+
+            /*
+            newWord : function(data) {
+                // Create an unordered list element
+                var $list = $('<ul/>').attr('id','ulAnswers');
+
+                // Insert a list item for each word in the word list
+                // received from the server.
+                $.each(data.list, function(){
+                    $list                                //  <ul> </ul>
+                        .append( $('<li/>')              //  <ul> <li> </li> </ul>
+                            .append( $('<button/>')      //  <ul> <li> <button> </button> </li> </ul>
+                                .addClass('btnAnswer')   //  <ul> <li> <button class='btnAnswer'> </button> </li> </ul>
+                                .addClass('btn')         //  <ul> <li> <button class='btnAnswer'> </button> </li> </ul>
+                                .val(this)               //  <ul> <li> <button class='btnAnswer' value='word'> </button> </li> </ul>
+                                .html(this)              //  <ul> <li> <button class='btnAnswer' value='word'>word</button> </li> </ul>
+                            )
+                        )
+                });
+            */
 
             /**
              * Show the "Game Over" screen.
