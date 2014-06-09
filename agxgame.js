@@ -1,6 +1,8 @@
 var io;
 var gameSocket;
 
+""" test fork Max
+"""
 /**
  * This function is called by index.js to initialize a new game instance.
  *
@@ -36,7 +38,6 @@ exports.initGame = function(sio, socket){
 function hostCreateNewGame() {
     // Create a unique Socket.IO Room
     var thisGameId = ( Math.random() * 100000 ) | 0;
-
     // Return the Room ID (gameId) and the socket ID (mySocketId) to the browser client
     this.emit('newGameCreated', {gameId: thisGameId, mySocketId: this.id});
 
@@ -63,8 +64,10 @@ function hostPrepareGame(gameId) {
  * @param gameId The game ID / room ID
  */
 function hostStartGame(gameId) {
-    console.log('Game Started.');
-    sendWord(0,gameId);
+    console.log('Game Started!');
+    // Version using word questions
+    // sendWord(0,gameId);
+    sendQuestion(0,gameId);
 };
 
 /**
@@ -72,14 +75,37 @@ function hostStartGame(gameId) {
  * @param data Sent from the client. Contains the current round and gameId (room)
  */
 function hostNextRound(data) {
+	console.log('Asked for a new round');
+    if(data.round < QuestionPool.length ){
+    	console.log('Not at the end of the pool, creating a new set of words.')
+        // Send a new set of questions back to the host and players.
+        sendQuestion(data.round, data.gameId);
+    } else {
+    	console.log('End of game.')
+        // If the current round exceeds the number of questions, send the 'gameOver' event.
+        io.sockets.in(data.gameId).emit('gameOver',data);
+    }
+}
+
+
+/**
+ * A player answered correctly. Time for the next word.
+ * @param data Sent from the client. Contains the current round and gameId (room)
+ 
+function hostNextRound(data) {
+    console.log('Asked for a new round');
     if(data.round < wordPool.length ){
+        console.log('Not at the end of the pool, creating a new set of words.')
         // Send a new set of words back to the host and players.
         sendWord(data.round, data.gameId);
     } else {
+        console.log('End of game.')
         // If the current round exceeds the number of words, send the 'gameOver' event.
         io.sockets.in(data.gameId).emit('gameOver',data);
     }
 }
+*/
+
 /* *****************************
    *                           *
    *     PLAYER FUNCTIONS      *
@@ -125,7 +151,7 @@ function playerJoinGame(data) {
  * @param data gameId
  */
 function playerAnswer(data) {
-    // console.log('Player ID: ' + data.playerId + ' answered a question with: ' + data.answer);
+    console.log('Player ID: ' + data.playerId + ' answered a question with: ' + data.answer);
 
     // The player's answer is attached to the data object.  \
     // Emit an event with the answer so it can be checked by the 'Host'
@@ -144,22 +170,77 @@ function playerRestart(data) {
     io.sockets.in(data.gameId).emit('playerJoinedRoom',data);
 }
 
-/* *************************
-   *                       *
-   *      GAME LOGIC       *
-   *                       *
-   ************************* */
+/*
+==================
+TOUCHI'S QUESTIONS
+==================
+*/
+
+/**
+ * Send the question to the host, and a list of responses for the players.
+ *
+ * @param QuestionPoolIndex !WIP!
+ * @param gameId The room identifier
+ */
+function sendQuestion(QuestionPoolIndex, gameId) {
+    var data = getQuestionData(QuestionPoolIndex);
+    io.sockets.in(data.gameId).emit('newQuestionData', data);
+}
+
+/*
+ * This function does all the work of getting a multiple answer question from the pile
+ * and organizing the data to be sent back to the clients.
+ *
+ * @param i The index of the QuestionPool.
+ * @returns {{round: *, word: *, answer: *, list: Array}}
+*/
+
+function getQuestionData(i){
+    // Gets the question
+    var question = QuestionPool[i].question;
+
+    // Gets the response
+    var answer = QuestionPool[i].answer;
+
+    // Randomize the order of the decoys.
+    var decoys = shuffle(QuestionPool[i].decoys);
+
+    // Pick a random spot in the decoy list to put the correct answer
+    var rnd = Math.floor(Math.random() * 4);
+    decoys.splice(rnd, 0, answer[0]);
+
+    // Package the words into a single object.
+    var Questiondata = {
+        round: i,
+        question : question[0],   // Displayed Question
+        answer : answer[0], // Correct Answer
+        list : decoys      // Word list for player (decoys and answer)
+    };
+    console.log('getQuestionData is fine');
+    for (var i=0; i< 5; i++){
+        console.log(Questiondata[i])
+        }
+    return Questiondata;
+
+}
+
+/*
+=====================================
+FIND WORD WITH SAME LETTERS QUESTIONS
+=====================================
+*/
 
 /**
  * Get a word for the host, and a list of words for the player.
  *
  * @param wordPoolIndex
  * @param gameId The room identifier
- */
+ 
 function sendWord(wordPoolIndex, gameId) {
     var data = getWordData(wordPoolIndex);
     io.sockets.in(data.gameId).emit('newWordData', data);
 }
+*/
 
 /**
  * This function does all the work of getting a new words from the pile
@@ -167,7 +248,6 @@ function sendWord(wordPoolIndex, gameId) {
  *
  * @param i The index of the wordPool.
  * @returns {{round: *, word: *, answer: *, list: Array}}
- */
 function getWordData(i){
     // Randomize the order of the available words.
     // The first element in the randomized array will be displayed on the host screen.
@@ -191,6 +271,7 @@ function getWordData(i){
 
     return wordData;
 }
+*/
 
 /*
  * Javascript implementation of Fisher-Yates shuffle algorithm
@@ -218,6 +299,8 @@ function shuffle(array) {
 }
 
 /**
+ * WordPool used by NewWord, getWordData functions 
+
  * Each element in the array provides data for a single round in the game.
  *
  * In each round, two random "words" are chosen as the host word and the correct answer.
@@ -226,6 +309,9 @@ function shuffle(array) {
  *
  * @type {Array}
  */
+
+/*
+* Previous pool of words 
 var wordPool = [
     {
         "words"  : [ "sale","seal","ales","leas" ],
@@ -276,4 +362,33 @@ var wordPool = [
         "words"  : [ "stone","tones","steno","onset" ],
         "decoys" : [ "snout","tongs","stent","tense","terns","santo","stony","toons","snort","stint" ]
     }
+]
+*/
+
+/**
+ * Each element in the array provides data for a single round in the game.
+ *
+ * In each round is composed of 3 elements: a question (string), the right answer, and 4 wrong answers 
+ *
+ */
+var QuestionPool = [
+    {
+        "question"  : [ "Quel est le temps de gestation d'un éléphant" ],
+        "answer" : [ "22 mois" ],
+        "decoys" : [ "12 mois","3 mois","18 mois","40 mois" ]
+    },
+
+    {
+        "question"  : [ "How old is Antoine Aymer" ],
+        "answer" : [ "37 years old" ],
+        "decoys" : [ "22 years old","30 years old","35 years old","72 years old" ]
+    },
+    
+    {
+        "question"  : [ "Quel est le nom du dernier acteur qui a joué James Bond" ],
+        "answer" : [ "Daniel Craig" ],
+        "decoys" : [ "Pierce Brossnan","Sean Connery","Robert John","Warren Buffet" ]
+    }
+    
+
 ]

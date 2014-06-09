@@ -255,6 +255,16 @@ html, body {
     text-transform: uppercase;
 }
 
+#countDownArea {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 100px;
+    max-font-size: 100px;
+    position:fixed;
+    right: 100px;
+    bottom: 100px;
+    
+}
+
 #playerScores {
     height: 10%;
     width: 100%;

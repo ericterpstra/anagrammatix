@@ -2,7 +2,7 @@
 
 A multi-player, multi-screen game built to experiment with Socket.IO and Node.js.
 
-There is *sometimes* a working demo up at http://agx.terpstra.co - but no guarantees.
+There is *sometimes* a working demo up at http://agx.terpstra.co - but no guarantees. 
 
 ## To Install
 
@@ -33,3 +33,5 @@ There is *sometimes* a working demo up at http://agx.terpstra.co - but no guaran
 4. The player who taps the correct anagram first gets 5 points.
 5. Tapping an incorrect word will subtract 3 points.
 6. The player with the most points after 10 rounds wins!
+
+And let's go!
