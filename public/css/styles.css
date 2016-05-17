@@ -317,5 +317,40 @@ html, body {
     position: fixed;
     bottom: 0;
 }
+#tablearea{
+  text-align:center;
+  width:50%;
+  margin:0 auto;
+}
 
+#mid{
 
+  margin-top:2%;
+  width:100%;
+  text-align:center;
+}
+#banner{
+  text-align: center;
+  font-size: 4em;
+}
+table{
+  width:100%;
+}
+tr{
+  width:100%;
+}
+td,th{
+  width:50%;
+  text-align: center;
+  border-bottom:0.1em solid black;
+  font-size: 2em;
+
+}
+tr:nth-child(even) {
+  background: #333300 ;
+  color:white;
+}
+tr:nth-child(odd) {
+  background: #336600 ;
+  color:white;
+}

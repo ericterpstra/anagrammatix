@@ -1,5 +1,5 @@
 ;
-jQuery(function($){    
+jQuery(function($){
     'use strict';
 
     /**
@@ -31,6 +31,7 @@ jQuery(function($){
             IO.socket.on('hostCheckAnswer', IO.hostCheckAnswer);
             IO.socket.on('gameOver', IO.gameOver);
             IO.socket.on('error', IO.error );
+            IO.socket.on('showLeader',IO.showLeader);
         },
 
         /**
@@ -40,6 +41,23 @@ jQuery(function($){
             // Cache a copy of the client's socket.IO session ID on the App
             App.mySocketId = IO.socket.socket.sessionid;
             // console.log(data.message);
+        },
+
+        //function for showing leader
+        showLeader : function(data){
+          App.$gameArea.html(App.$leaderGame);
+            var table='<div id="tablearea"><table id="leadertable"><tr><th>Player Name</th><th>Total Win</th></tr>';
+            console.log("Showing Leader");
+            var i=Object.keys(data).length;
+            for(var j=0;j<i;j++)
+            {
+                //console.log(i);
+              table+='<tr><td>'+data[j].name+'</td><td>'+data[j].win+'</td></tr>';
+            }
+            table+='</table></div>';
+            table+="<div id='mid'><button id='back' class='btn'>BACK</button></div>"
+            console.log(table);
+            App.$gameArea.append(table);
         },
 
         /**
@@ -167,6 +185,7 @@ jQuery(function($){
             App.$templateNewGame = $('#create-game-template').html();
             App.$templateJoinGame = $('#join-game-template').html();
             App.$hostGame = $('#host-game-template').html();
+            App.$leaderGame = $('#leaderboard-template').html();
         },
 
         /**
@@ -181,6 +200,8 @@ jQuery(function($){
             App.$doc.on('click', '#btnStart',App.Player.onPlayerStartClick);
             App.$doc.on('click', '.btnAnswer',App.Player.onPlayerAnswerClick);
             App.$doc.on('click', '#btnPlayerRestart', App.Player.onPlayerRestart);
+            App.$doc.on('click', '#leaderboard', App.onLeaderboardClick);
+            App.$doc.on('click', '#back', App.onBackClick);
         },
 
         /* *************************************
@@ -196,7 +217,16 @@ jQuery(function($){
             App.doTextFit('.title');
         },
 
+        onLeaderboardClick : function(){
+          console.log("clicked button");
+          IO.socket.emit('findLeader');
+        },
 
+        onBackClick : function()
+        {
+          App.$gameArea.html(App.$templateIntroScreen);
+          App.doTextFit('.title');
+        },
         /* *******************************
            *         HOST CODE           *
            ******************************* */
@@ -397,10 +427,19 @@ jQuery(function($){
                     $('#hostWord').text( winner + ' Wins!!' );
                 }
                 App.doTextFit('#hostWord');
+                data.winner=winner;
+                if(data.done>0)
+                {
 
+                }
+                else data.done=0;
+                //console.log(data);
+                //IO.socket.emit("clientEndGame",data);
                 // Reset game data
                 App.Host.numPlayersInRoom = 0;
                 App.Host.isNewGame = true;
+                IO.socket.emit('hostNextRound',data);
+                // Reset game data
             },
 
             /**
