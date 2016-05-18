@@ -1,8 +1,11 @@
 # Anagrammatix
 
+### UPDATE:
+
+This repo is no longer maintained, and is quite old. A fork has been created at: https://github.com/InsomniacSabbir/anagrammatix that includes a leaderboard.
+
 A multi-player, multi-screen game built to experiment with Socket.IO and Node.js.
 
-There is *sometimes* a working demo up at http://agx.terpstra.co:8888 - but no guarantees.
 
 ## To Install
 
