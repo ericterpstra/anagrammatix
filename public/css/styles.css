@@ -23,7 +23,6 @@ html, body {
    ****************************** */
 
 .btn {
-    display: inline-block;
     height: 100%;
     width: 49%;
     margin-bottom: 0;
@@ -34,10 +33,9 @@ html, body {
     line-height: 1.2;
     text-align: center;
     background-color: #8AD453;
-    white-space: nowrap;
     vertical-align: middle;
     cursor: pointer;
-    border: 1px solid transparent;
+    border: .1em solid transparent;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -138,15 +136,15 @@ html, body {
 
 .info input {
     text-align: center;
-    padding: 10px;
-    width: 200px;
-    height: 60px;
+    padding: 1em;
+    width: 25%;
+    height: 25%;
     font-family: 'Quicksand', sans-serif;
     color: #A22FB0;
     font-weight: 300;
-    font-size: 54px;
-    border: 1px dotted white;
-    border-radius: 10px;
+    font-size: 1em;
+    border: .1em dotted white;
+    border-radius: 2%;
     background: transparent;
 }
 
@@ -246,7 +244,7 @@ html, body {
 }
 
 #hostWord h2, #btnPlayerRestart h3 {
-    font-size: 161px;
+    font-size: 3em;
     line-height: 1em;
     font-family: 'Quicksand', sans-serif;
     font-weight: 400;
@@ -317,5 +315,40 @@ html, body {
     position: fixed;
     bottom: 0;
 }
+#tablearea{
+  text-align:center;
+  width:50%;
+  margin:0 auto;
+}
 
+#mid{
 
+  margin-top:2%;
+  width:100%;
+  text-align:center;
+}
+#banner{
+  text-align: center;
+  font-size: 4em;
+}
+table{
+  width:100%;
+}
+tr{
+  width:100%;
+}
+td,th{
+  width:50%;
+  text-align: center;
+  border-bottom:0.1em solid black;
+  font-size: 2em;
+
+}
+tr:nth-child(even) {
+  background: #333300 ;
+  color:white;
+}
+tr:nth-child(odd) {
+  background: #336600 ;
+  color:white;
+}
